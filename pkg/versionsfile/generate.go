@@ -12,22 +12,15 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-type GoArchive struct {
-	OS     string
-	CPU    string
-	URL    string
-	SHA256 string
-}
-
 func Generate(outputPath string) error {
 	downloadsPageDoc, err := getDownloadsPage()
 	if err != nil {
 		return err
 	}
 
-	versions := extractVersions(downloadsPageDoc)
+	rvf := extractRemoteVersionsFile(downloadsPageDoc)
 
-	versionsBytes, err := json.Marshal(versions)
+	versionsBytes, err := json.Marshal(rvf.versions)
 	if err != nil {
 		return err
 	}
@@ -53,7 +46,7 @@ func getDownloadsPage() (*goquery.Document, error) {
 
 var validGoVersionRegex = regexp.MustCompile(`^go[0-9]+(\.[0-9]+){1,2}$`)
 
-func extractVersions(doc *goquery.Document) map[string][]GoArchive {
+func extractRemoteVersionsFile(doc *goquery.Document) RemoteVersionsFile {
 	versions := make(map[string][]GoArchive)
 
 	doc.Find(`div[id^="go"]`).
@@ -68,7 +61,7 @@ func extractVersions(doc *goquery.Document) map[string][]GoArchive {
 			versions[version] = archives
 		})
 
-	return versions
+	return RemoteVersionsFile{versions: versions}
 }
 
 var archiveFileRegex = regexp.MustCompile(`^go(?:[0-9]+\.){2,3}([^-]+)-([^\.]+)\..*$`)
@@ -92,7 +85,7 @@ func extractArchive(archiveRowSelection *goquery.Selection) GoArchive {
 
 	checksum := archiveRowSelection.Find(`td:nth-child(6) tt`).Text()
 	return GoArchive{
-		CPU:    matches[2],
+		ARCH:   matches[2],
 		OS:     matches[1],
 		URL:    link,
 		SHA256: checksum,
