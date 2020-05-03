@@ -1,7 +1,5 @@
 package versionsfile
 
-import "runtime"
-
 type GoArchive struct {
 	OS     string
 	ARCH   string
@@ -20,24 +18,13 @@ type RemoteVersionsFile struct {
 func (rvf *RemoteVersionsFile) GetArchivesFor(arch, os string) map[string]GoArchive {
 	foundArchives := make(map[string]GoArchive)
 	for version, archives := range rvf.versions {
-		archive := getArchiveForPlatform(archives)
-		if archive != nil {
-			foundArchives[version] = *archive
+		for _, archive := range archives {
+			if archive.ARCH == arch && archive.OS == os {
+				foundArchives[version] = archive
+				break
+			}
 		}
 	}
 
 	return foundArchives
-}
-
-func getArchiveForPlatform(archives []GoArchive) *GoArchive {
-	arch := runtime.GOARCH
-	os := runtime.GOOS
-
-	for _, archive := range archives {
-		if archive.ARCH == arch && archive.OS == os {
-			return &archive
-		}
-	}
-
-	return nil
 }

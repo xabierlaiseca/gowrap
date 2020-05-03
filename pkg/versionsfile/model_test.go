@@ -32,6 +32,8 @@ func init() {
 func Test_RemoteVersionsFile_GetArchivesFor(t *testing.T) {
 	testCases := map[string]struct {
 		availableVersions  map[string][]GoArchive
+		inputARCH          string
+		inputOS            string
 		expectedGoArchives map[string]GoArchive
 	}{
 		"NoVersionsForCurrentPlatform": {
@@ -40,6 +42,8 @@ func Test_RemoteVersionsFile_GetArchivesFor(t *testing.T) {
 					{ARCH: otherARCH, OS: otherOS},
 				},
 			},
+			inputARCH:          thisARCH,
+			inputOS:            thisOS,
 			expectedGoArchives: make(map[string]GoArchive),
 		},
 		"OneVersionsForCurrentPlatform": {
@@ -49,8 +53,23 @@ func Test_RemoteVersionsFile_GetArchivesFor(t *testing.T) {
 					{ARCH: thisARCH, OS: thisOS},
 				},
 			},
+			inputARCH: thisARCH,
+			inputOS:   thisOS,
 			expectedGoArchives: map[string]GoArchive{
 				"1.2.3": GoArchive{ARCH: thisARCH, OS: thisOS},
+			},
+		},
+		"ArchivesForOtherPlatform": {
+			availableVersions: map[string][]GoArchive{
+				"1.2.3": []GoArchive{
+					{ARCH: otherARCH, OS: otherOS},
+					{ARCH: thisARCH, OS: thisOS},
+				},
+			},
+			inputARCH: otherARCH,
+			inputOS:   otherOS,
+			expectedGoArchives: map[string]GoArchive{
+				"1.2.3": GoArchive{ARCH: otherARCH, OS: otherOS},
 			},
 		},
 	}
@@ -61,7 +80,7 @@ func Test_RemoteVersionsFile_GetArchivesFor(t *testing.T) {
 				versions: testCase.availableVersions,
 			}
 
-			result := underTest.GetArchivesFor(thisARCH, thisOS)
+			result := underTest.GetArchivesFor(testCase.inputARCH, testCase.inputOS)
 			assert.Equal(t, testCase.expectedGoArchives, result)
 		})
 	}
