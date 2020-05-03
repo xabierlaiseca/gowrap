@@ -16,18 +16,6 @@ func main() {
 	if versionsFileCommand.Happened() {
 		exitOnError(versionsFileCommandHandler())
 	}
-
-	// vs, err := versions.List()
-	// exitOnError(err)
-	//
-	// if len(vs) == 0 {
-	// 	fmt.Println("No installed versions found")
-	// }
-	//
-	// for _, v := range vs {
-	// 	print(v.Version)
-	// }
-
 }
 
 func exitOnError(err error) {

@@ -53,15 +53,6 @@ func Test_RemoteVersionsFile_GetArchivesFor(t *testing.T) {
 				"1.2.3": GoArchive{ARCH: thisARCH, OS: thisOS},
 			},
 		},
-		// // "VersionExistsButNoArchivesForPlatform": {
-		// //
-		// // }
-		// "ArchiveExistsForPlatform": {
-		// 	availableVersions: map[string][]GoArchive{"1.3.4": []GoArchive{
-		// 		{OS: runtime.GOOS, ARCH: runtime.GOARCH},
-		// 	}},
-		// 	expectedGoArchive: &GoArchive{OS: runtime.GOOS, ARCH: runtime.GOARCH},
-		// },
 	}
 
 	for name, testCase := range testCases {
