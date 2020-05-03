@@ -10,11 +10,14 @@ import (
 
 func main() {
 	parser := argparse.NewParser("gowrap", "gowrap util")
-	versionsFileCommand, versionsFileCommandHandler := commands.NewVersionsFileCommand(&parser.Command)
+	versionsFileCmd, versionsFileCmdHandler := commands.NewVersionsFileCommand(&parser.Command)
+	listCmd, listCmdHandler := commands.NewListCommand(&parser.Command)
 	parser.Parse(os.Args)
 
-	if versionsFileCommand.Happened() {
-		exitOnError(versionsFileCommandHandler())
+	if versionsFileCmd.Happened() {
+		exitOnError(versionsFileCmdHandler())
+	} else if listCmd.Happened() {
+		exitOnError(listCmdHandler())
 	}
 }
 

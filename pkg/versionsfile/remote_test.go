@@ -76,11 +76,11 @@ func Test_RemoteVersionsFile_GetArchivesFor(t *testing.T) {
 
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
-			underTest := RemoteVersionsFile{
+			underTest := remoteVersionsFile{
 				versions: testCase.availableVersions,
 			}
 
-			result := underTest.GetArchivesFor(testCase.inputARCH, testCase.inputOS)
+			result := underTest.getArchivesFor(testCase.inputARCH, testCase.inputOS)
 			assert.Equal(t, testCase.expectedGoArchives, result)
 		})
 	}
