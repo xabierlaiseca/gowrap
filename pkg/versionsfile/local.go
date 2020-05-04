@@ -12,10 +12,8 @@ import (
 const localVersionsCachedFile = "goversions.json"
 
 type GoArchive struct {
-	OS     string
-	ARCH   string
-	URL    string
-	SHA256 string
+	URL    string `json:"url,omitempty"`
+	SHA256 string `json:"sha256,omitempty"`
 }
 
 func Load() (map[string]GoArchive, error) {
@@ -24,13 +22,18 @@ func Load() (map[string]GoArchive, error) {
 		logrus.Warningf("failed to get cached go versions file: %v", err)
 	}
 
+	archivesForPlatform := make(map[string]GoArchive)
+
 	if content == nil {
 		rvf, err := download()
 		if err != nil {
 			return nil, err
 		}
 
-		archivesForPlatform := rvf.getArchivesFor(runtime.GOARCH, runtime.GOOS)
+		for version, pga := range rvf.getArchivesFor(runtime.GOARCH, runtime.GOOS) {
+			archivesForPlatform[version] = pga.GoArchive
+		}
+
 		toCache, err := json.Marshal(archivesForPlatform)
 		if err == nil {
 			cache.Set(localVersionsCachedFile, toCache, 24*time.Hour)
@@ -38,10 +41,9 @@ func Load() (map[string]GoArchive, error) {
 			logrus.Warningf("failed to serialise archives for caching: %v", err)
 		}
 
-		return archivesForPlatform, nil
+	} else {
+		err = json.Unmarshal(content, &archivesForPlatform)
 	}
 
-	var archivesForPlatform map[string]GoArchive
-	err = json.Unmarshal(content, &archivesForPlatform)
 	return archivesForPlatform, err
 }

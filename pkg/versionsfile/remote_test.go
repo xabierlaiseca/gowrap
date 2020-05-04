@@ -31,45 +31,45 @@ func init() {
 
 func Test_RemoteVersionsFile_GetArchivesFor(t *testing.T) {
 	testCases := map[string]struct {
-		availableVersions  map[string][]GoArchive
+		availableVersions  map[string][]platformGoArchive
 		inputARCH          string
 		inputOS            string
-		expectedGoArchives map[string]GoArchive
+		expectedGoArchives map[string]platformGoArchive
 	}{
 		"NoVersionsForCurrentPlatform": {
-			availableVersions: map[string][]GoArchive{
-				"1.2.3": []GoArchive{
+			availableVersions: map[string][]platformGoArchive{
+				"1.2.3": []platformGoArchive{
 					{ARCH: otherARCH, OS: otherOS},
 				},
 			},
 			inputARCH:          thisARCH,
 			inputOS:            thisOS,
-			expectedGoArchives: make(map[string]GoArchive),
+			expectedGoArchives: make(map[string]platformGoArchive),
 		},
 		"OneVersionsForCurrentPlatform": {
-			availableVersions: map[string][]GoArchive{
-				"1.2.3": []GoArchive{
+			availableVersions: map[string][]platformGoArchive{
+				"1.2.3": []platformGoArchive{
 					{ARCH: otherARCH, OS: otherOS},
 					{ARCH: thisARCH, OS: thisOS},
 				},
 			},
 			inputARCH: thisARCH,
 			inputOS:   thisOS,
-			expectedGoArchives: map[string]GoArchive{
-				"1.2.3": GoArchive{ARCH: thisARCH, OS: thisOS},
+			expectedGoArchives: map[string]platformGoArchive{
+				"1.2.3": platformGoArchive{ARCH: thisARCH, OS: thisOS},
 			},
 		},
 		"ArchivesForOtherPlatform": {
-			availableVersions: map[string][]GoArchive{
-				"1.2.3": []GoArchive{
+			availableVersions: map[string][]platformGoArchive{
+				"1.2.3": []platformGoArchive{
 					{ARCH: otherARCH, OS: otherOS},
 					{ARCH: thisARCH, OS: thisOS},
 				},
 			},
 			inputARCH: otherARCH,
 			inputOS:   otherOS,
-			expectedGoArchives: map[string]GoArchive{
-				"1.2.3": GoArchive{ARCH: otherARCH, OS: otherOS},
+			expectedGoArchives: map[string]platformGoArchive{
+				"1.2.3": platformGoArchive{ARCH: otherARCH, OS: otherOS},
 			},
 		},
 	}
