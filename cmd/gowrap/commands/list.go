@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	"github.com/akamensky/argparse"
+	"github.com/xabierlaiseca/gowrap/pkg/semver"
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
 
@@ -36,7 +37,12 @@ func newListAvailableCommand(parent *argparse.Command) (*argparse.Command, func(
 			versions = append(versions, version)
 		}
 
-		sort.Strings(versions)
+		comparator, err := semver.SliceStableComparatorFor(versions)
+		if err != nil {
+			return err
+		}
+
+		sort.SliceStable(versions, comparator)
 		for _, version := range versions {
 			fmt.Println(version)
 		}
