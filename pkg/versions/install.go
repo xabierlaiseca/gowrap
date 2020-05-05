@@ -18,14 +18,7 @@ import (
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
 
-var versionsDirRelToHome = filepath.Join(".gowrap", "versions")
-
 func Install(version string) error {
-	userHome, err := os.UserHomeDir()
-	if err != nil {
-		return err
-	}
-
 	installableVersions, err := versionsfile.Load()
 	if err != nil {
 		return err
@@ -115,8 +108,8 @@ func Install(version string) error {
 		return err
 	}
 
-	versionsDir := filepath.Join(userHome, versionsDirRelToHome)
-	if err := os.MkdirAll(versionsDir, 0755); err != nil {
+	versionsDir, err := getVersionsDir()
+	if err != nil {
 		return err
 	}
 
