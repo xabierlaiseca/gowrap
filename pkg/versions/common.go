@@ -11,7 +11,7 @@ import (
 
 var versionsDirRelToHome = filepath.Join(".gowrap", "versions")
 
-func getVersionsDir() (string, error) {
+func GetVersionsDir() (string, error) {
 	userHome, err := os.UserHomeDir()
 	if err != nil {
 		return "", err

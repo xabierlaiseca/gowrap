@@ -108,7 +108,7 @@ func Install(version string) error {
 		return err
 	}
 
-	versionsDir, err := getVersionsDir()
+	versionsDir, err := GetVersionsDir()
 	if err != nil {
 		return err
 	}

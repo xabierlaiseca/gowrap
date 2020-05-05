@@ -1,6 +1,7 @@
 package semver
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -23,6 +24,20 @@ var validSemVerRegex = regexp.MustCompile(`^[0-9]+(\.[0-9]+){0,2}$`)
 
 func IsValid(semver string) bool {
 	return validSemVerRegex.MatchString(semver)
+}
+
+func Latest(versions []string) (string, error) {
+	if len(versions) == 0 {
+		return "", errors.New("no versions provided")
+	}
+
+	latest := versions[0]
+	for i := 1; i < len(versions); i++ {
+		if isOlder(latest, versions[i]) {
+			latest = versions[i]
+		}
+	}
+	return latest, nil
 }
 
 func isOlder(semver1, semver2 string) bool {

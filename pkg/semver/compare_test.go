@@ -185,3 +185,40 @@ func Test_SliceStableComparatorFor_InvalidVersions(t *testing.T) {
 	_, err := SliceStableComparatorFor(semvers)
 	assert.EqualError(t, err, "invalid semantic version: 1.20.a")
 }
+
+func Test_Latest(t *testing.T) {
+	testCases := map[string]struct {
+		input    []string
+		expected string
+	}{
+		"OneVersion": {
+			input:    []string{"1.14.2"},
+			expected: "1.14.2",
+		},
+		"TwoVersionsFirstIsLatest": {
+			input:    []string{"1.14.2", "1.3.2"},
+			expected: "1.14.2",
+		},
+		"TwoVersionsSecondIsLatest": {
+			input:    []string{"1.3.2", "1.14.2"},
+			expected: "1.14.2",
+		},
+		"MultipleVersions": {
+			input:    []string{"1.3.2", "1.14.2", "1.13.2", "1.14.1"},
+			expected: "1.14.2",
+		},
+	}
+
+	for testName, testCase := range testCases {
+		t.Run(testName, func(t *testing.T) {
+			actual, err := Latest(testCase.input)
+			assert.NoError(t, err)
+			assert.Equal(t, testCase.expected, actual)
+		})
+	}
+}
+
+func Test_Latest_NoVersionsProvided(t *testing.T) {
+	_, err := Latest([]string{})
+	assert.Error(t, err)
+}

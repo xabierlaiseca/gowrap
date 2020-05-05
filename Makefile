@@ -11,7 +11,10 @@ build-init:
 build-gowrap: build-init
 	go build -o $(BIN_DIR)/gowrap cmd/gowrap/main.go
 
-build: pre-build test build-gowrap
+build-go: build-init
+	go build -o $(BIN_DIR)/go cmd/go/main.go
+
+build: pre-build test build-gowrap build-go
 
 clean:
 	rm -r $(BIN_DIR)
@@ -21,4 +24,3 @@ test:
 
 generate-versions-file: build-gowrap
 	$(BIN_DIR)/gowrap versions-file generate --file data/versions.json
-	

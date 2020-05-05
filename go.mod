@@ -8,5 +8,6 @@ require (
 	github.com/mholt/archiver/v3 v3.3.0
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.5.1
+	golang.org/x/mod v0.2.0
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
 )

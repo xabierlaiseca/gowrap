@@ -27,7 +27,7 @@ func newListAvailableCommand(parent *argparse.Command) (*argparse.Command, func(
 	cmd := parent.NewCommand("available", "Lists the available go versions to install")
 
 	return cmd, func() error {
-		return versions.ListAvailable()
+		return versions.PrintAvailable()
 	}
 }
 
@@ -35,6 +35,6 @@ func newListInstalledCommand(parent *argparse.Command) (*argparse.Command, func(
 	cmd := parent.NewCommand("installed", "Lists installed go versions")
 
 	return cmd, func() error {
-		return versions.ListInstalled()
+		return versions.PrintInstalled()
 	}
 }
