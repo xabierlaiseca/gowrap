@@ -3,6 +3,7 @@ package versionsfile
 import (
 	"encoding/json"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -12,8 +13,17 @@ import (
 const localVersionsCachedFile = "goversions.json"
 
 type GoArchive struct {
-	URL    string `json:"url,omitempty"`
-	SHA256 string `json:"sha256,omitempty"`
+	URL               string `json:"url,omitempty"`
+	Checksum          string `json:"checksum,omitempty"`
+	ChecksumAlgorithm string `json:"checksumAlgorithm,omitempty"`
+}
+
+func (archive *GoArchive) IsSHA256Checksum() bool {
+	return strings.ToLower(archive.ChecksumAlgorithm) == "sha256"
+}
+
+func (archive *GoArchive) IsSHA1Checksum() bool {
+	return strings.ToLower(archive.ChecksumAlgorithm) == "sha1"
 }
 
 func Load() (map[string]GoArchive, error) {

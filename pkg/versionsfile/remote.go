@@ -124,18 +124,23 @@ func extractRemoteVersionsFile(doc *goquery.Document) remoteVersionsFile {
 var archiveFileRegex = regexp.MustCompile(`^go(?:[0-9]+\.){2,3}([^-]+)-([^\.]+)\..*$`)
 
 func extractArchives(versionSelection *goquery.Selection) []platformGoArchive {
+	checksumAlgorithmTitle := versionSelection.
+		Find("thead tr th:nth-child(6)").
+		Text()
+
+	checksumAlgorithm := strings.SplitN(checksumAlgorithmTitle, " ", 2)[0]
 	var archives []platformGoArchive
 
 	versionSelection.Find("tbody tr").
 		Filter(`:has(td:contains("archive"))`).
 		Each(func(_ int, archiveRowSelection *goquery.Selection) {
-			archives = append(archives, extractArchive(archiveRowSelection))
+			archives = append(archives, extractArchive(archiveRowSelection, checksumAlgorithm))
 		})
 
 	return archives
 }
 
-func extractArchive(archiveRowSelection *goquery.Selection) platformGoArchive {
+func extractArchive(archiveRowSelection *goquery.Selection, checksumAlgorithm string) platformGoArchive {
 	link, _ := archiveRowSelection.Find(`td:first-child a`).First().Attr("href")
 	filename := path.Base(link)
 	matches := archiveFileRegex.FindStringSubmatch(filename)
@@ -143,8 +148,9 @@ func extractArchive(archiveRowSelection *goquery.Selection) platformGoArchive {
 	checksum := archiveRowSelection.Find(`td:nth-child(6) tt`).Text()
 	return platformGoArchive{
 		GoArchive: GoArchive{
-			URL:    link,
-			SHA256: checksum,
+			URL:               link,
+			Checksum:          checksum,
+			ChecksumAlgorithm: checksumAlgorithm,
 		},
 		ARCH: matches[2],
 		OS:   matches[1],
