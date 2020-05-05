@@ -12,12 +12,15 @@ func main() {
 	parser := argparse.NewParser("gowrap", "gowrap util")
 	versionsFileCmd, versionsFileCmdHandler := commands.NewVersionsFileCommand(&parser.Command)
 	listCmd, listCmdHandler := commands.NewListCommand(&parser.Command)
-	parser.Parse(os.Args)
+	installCmd, installCmdHandler := commands.NewInstallCommand(&parser.Command)
+	exitOnError(parser.Parse(os.Args))
 
 	if versionsFileCmd.Happened() {
 		exitOnError(versionsFileCmdHandler())
 	} else if listCmd.Happened() {
 		exitOnError(listCmdHandler())
+	} else if installCmd.Happened() {
+		exitOnError(installCmdHandler())
 	}
 }
 
