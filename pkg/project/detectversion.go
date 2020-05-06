@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
@@ -20,7 +19,6 @@ const (
 
 var (
 	errProjectRootNotFound = errors.New("project root not found")
-	goVersionRegexp        = regexp.MustCompile(`^\s*[0-9]+\.[0-9]+\.[0-9]+\s*$`)
 )
 
 func Detect(path string) (string, error) {

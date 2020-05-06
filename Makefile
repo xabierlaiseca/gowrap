@@ -1,9 +1,12 @@
+.DEFAULT_GOAL := build
+
 BIN_DIR := ./bin
 .PHONY: build build-gowrap build-init clean test
 
 pre-build:
 	go fmt ./...
 	go vet ./...
+	golangci-lint run
 
 build-init:
 	mkdir -p $(BIN_DIR)

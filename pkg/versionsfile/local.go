@@ -46,11 +46,13 @@ func Load() (map[string]GoArchive, error) {
 
 		toCache, err := json.Marshal(archivesForPlatform)
 		if err == nil {
-			cache.Set(localVersionsCachedFile, toCache, 24*time.Hour)
+			err = cache.Set(localVersionsCachedFile, toCache, 24*time.Hour)
+			if err != nil {
+				logrus.Warningf("failed to store local versions file: %v", err)
+			}
 		} else {
 			logrus.Warningf("failed to serialise archives for caching: %v", err)
 		}
-
 	} else {
 		err = json.Unmarshal(content, &archivesForPlatform)
 	}

@@ -77,7 +77,13 @@ func Install(version string) error {
 		}
 
 		writeCount, err := dst.Write(bytes[:readCount])
-		hasher.Write(bytes[:readCount])
+		if err != nil {
+			return err
+		}
+
+		if _, err = hasher.Write(bytes[:readCount]); err != nil {
+			return err
+		}
 
 		equalSigns := downloadedPercentage / 2
 		greaterSigns := 1
