@@ -1,0 +1,17 @@
+language: go
+
+go:
+  - 1.14.x
+
+os:
+  - linux
+  - osx
+  - windows
+
+arch:
+  - amd64
+
+before_install:
+  - if [ $TRAVIS_OS_NAME = "windows" ]; then choco install make; fi
+
+script: make
