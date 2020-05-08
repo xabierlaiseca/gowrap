@@ -9,7 +9,10 @@ import (
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
 )
 
-var versionsDirRelToHome = filepath.Join(".gowrap", "versions")
+const (
+	gowrapDir   = ".gowrap"
+	versionsDir = "versions"
+)
 
 func GetVersionsDir() (string, error) {
 	userHome, err := os.UserHomeDir()
@@ -17,7 +20,7 @@ func GetVersionsDir() (string, error) {
 		return "", err
 	}
 
-	dir := filepath.Join(userHome, versionsDirRelToHome)
+	dir := filepath.Join(userHome, gowrapDir, versionsDir)
 	return dir, os.MkdirAll(dir, 0755)
 }
 

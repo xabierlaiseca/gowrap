@@ -1,10 +1,9 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/akamensky/argparse"
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
+	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 	"github.com/xabierlaiseca/gowrap/pkg/versions"
 )
 
@@ -24,5 +23,5 @@ func validateVersion(version []string) error {
 	if semver.IsValid(version[0]) {
 		return nil
 	}
-	return fmt.Errorf("Invalid version provided: %s", version[0])
+	return customerrors.Errorf("Invalid version provided: %s", version[0])
 }

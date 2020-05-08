@@ -2,23 +2,19 @@ package project
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
+	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 	"github.com/xabierlaiseca/gowrap/pkg/versions"
 	"golang.org/x/mod/modfile"
 )
 
 const (
 	goModFile = "go.mod"
-)
-
-var (
-	errProjectRootNotFound = errors.New("project root not found")
 )
 
 func Detect(path string) (string, error) {
@@ -29,18 +25,18 @@ func Detect(path string) (string, error) {
 	}
 
 	if !info.IsDir() {
-		return "", fmt.Errorf("provided path is not directory: %s", path)
+		return "", customerrors.Errorf("provided path is not directory: %s", path)
 	}
 
 	installedVersions, err := versions.ListInstalled()
 	if err != nil {
 		return "", err
 	} else if len(installedVersions) == 0 {
-		return "", errors.New("no go versions installed")
+		return "", customerrors.New("no go versions installed")
 	}
 
 	projectRoot, err := findProjectRoot(p)
-	if err == errProjectRootNotFound {
+	if errors.As(err, &customerrors.NotFoundError{}) {
 		return semver.Latest(installedVersions)
 	} else if err != nil {
 		return "", err
@@ -59,7 +55,7 @@ func Detect(path string) (string, error) {
 	}
 
 	if len(compatibleVersions) == 0 {
-		return "", fmt.Errorf("no suitable installed version for go %s", minorGoVersion)
+		return "", customerrors.Errorf("no suitable installed version for go %s", minorGoVersion)
 	}
 
 	return semver.Latest(compatibleVersions)
@@ -78,7 +74,7 @@ func findProjectRoot(directory string) (string, error) {
 
 	parent := filepath.Dir(directory)
 	if parent == directory {
-		return "", errProjectRootNotFound
+		return "", customerrors.NotFound("project root")
 	}
 
 	return findProjectRoot(parent)

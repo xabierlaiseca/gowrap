@@ -14,10 +14,7 @@ const (
 	relCacheRootDir = "gowrap"
 	relMetadataDir  = "metadata"
 	relObjectsDir   = "objects"
-)
-
-var (
-	relCachedObjectsMetadataFile = filepath.Join(relMetadataDir, "objects.json")
+	objectFile      = "objects.json"
 )
 
 // Get returns the content of previously cached if not expired.
@@ -33,7 +30,8 @@ func Get(relpath string) ([]byte, error) {
 }
 
 func get(rootDir, relpath string) ([]byte, error) {
-	metadata, err := readCacheMetadata(rootDir)
+	cachedObjectsMetadataFile := buildCachedObjectsMetadataFile(rootDir)
+	metadata, err := readCacheMetadata(cachedObjectsMetadataFile)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +44,7 @@ func get(rootDir, relpath string) ([]byte, error) {
 		}
 
 		delete(metadata, relpath)
-		return nil, storeCacheMetadata(rootDir, metadata)
+		return nil, storeCacheMetadata(cachedObjectsMetadataFile, metadata)
 	} else if !ok {
 		return nil, nil
 	}
@@ -58,7 +56,7 @@ func get(rootDir, relpath string) ([]byte, error) {
 	return content, err
 }
 
-// Set stores the given content in provided cache path for the requested duration
+// Set stores the given content in provided cache path for the requested duration.
 func Set(relpath string, content []byte, expiresIn time.Duration) error {
 	rootDir, err := getRootDir()
 	if err != nil {
@@ -69,7 +67,8 @@ func Set(relpath string, content []byte, expiresIn time.Duration) error {
 }
 
 func set(rootDir, relpath string, content []byte, expiresIn time.Duration) error {
-	metadata, err := readCacheMetadata(rootDir)
+	cachedObjectsMetadataFile := buildCachedObjectsMetadataFile(rootDir)
+	metadata, err := readCacheMetadata(cachedObjectsMetadataFile)
 	if err != nil {
 		return err
 	}
@@ -79,16 +78,15 @@ func set(rootDir, relpath string, content []byte, expiresIn time.Duration) error
 		return err
 	}
 
-	if err := ioutil.WriteFile(objectPath, content, 0644); err != nil {
+	if err := ioutil.WriteFile(objectPath, content, 0600); err != nil {
 		return err
 	}
 
 	metadata[relpath] = time.Now().Add(expiresIn)
-	return storeCacheMetadata(rootDir, metadata)
+	return storeCacheMetadata(cachedObjectsMetadataFile, metadata)
 }
 
-func readCacheMetadata(rootDir string) (map[string]time.Time, error) {
-	cachedObjectsMetadataFile := filepath.Join(rootDir, relCachedObjectsMetadataFile)
+func readCacheMetadata(cachedObjectsMetadataFile string) (map[string]time.Time, error) {
 	content, err := ioutil.ReadFile(cachedObjectsMetadataFile)
 	if os.IsNotExist(err) {
 		return make(map[string]time.Time), nil
@@ -101,18 +99,17 @@ func readCacheMetadata(rootDir string) (map[string]time.Time, error) {
 	return metadata, err
 }
 
-func storeCacheMetadata(rootDir string, metadata map[string]time.Time) error {
+func storeCacheMetadata(cachedObjectsMetadataFile string, metadata map[string]time.Time) error {
 	bytes, err := json.Marshal(metadata)
 	if err != nil {
 		return err
 	}
 
-	cachedObjectsMetadataFile := filepath.Join(rootDir, relCachedObjectsMetadataFile)
 	if err := os.MkdirAll(filepath.Dir(cachedObjectsMetadataFile), 0755); err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(cachedObjectsMetadataFile, bytes, 0644)
+	return ioutil.WriteFile(cachedObjectsMetadataFile, bytes, 0600)
 }
 
 func getRootDir() (string, error) {
@@ -122,4 +119,8 @@ func getRootDir() (string, error) {
 	}
 
 	return filepath.Join(userCacheDir, relCacheRootDir), nil
+}
+
+func buildCachedObjectsMetadataFile(rootDir string) string {
+	return filepath.Join(rootDir, relMetadataDir, objectFile)
 }

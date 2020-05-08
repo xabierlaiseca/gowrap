@@ -1,9 +1,8 @@
 package commands
 
 import (
-	"errors"
-
 	"github.com/akamensky/argparse"
+	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
 
@@ -16,7 +15,7 @@ func NewVersionsFileCommand(parent *argparse.Command) (*argparse.Command, func()
 			return generateCmdHandler()
 		}
 
-		return errors.New("unexpected error: subcommand for 'versions-file' not found")
+		return customerrors.New("unexpected error: subcommand for 'versions-file' not found")
 	}
 }
 

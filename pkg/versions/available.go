@@ -10,7 +10,7 @@ func PrintAvailable() error {
 		return err
 	}
 
-	var versions []string
+	versions := make([]string, 0, len(versionGoArchives))
 	for version := range versionGoArchives {
 		versions = append(versions, version)
 	}

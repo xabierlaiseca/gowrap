@@ -15,8 +15,11 @@ import (
 
 	"github.com/mholt/archiver/v3"
 	"github.com/xabierlaiseca/gowrap/pkg/util/console"
+	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
+
+const downloadBufferSize = 64 * 1024
 
 func Install(version string) error {
 	installableVersions, err := versionsfile.Load()
@@ -26,7 +29,7 @@ func Install(version string) error {
 
 	archive, found := installableVersions[version]
 	if !found {
-		return fmt.Errorf("version %s is not available", version)
+		return customerrors.Errorf("version %s is not available", version)
 	}
 
 	response, err := http.Get(archive.URL)
@@ -49,18 +52,19 @@ func Install(version string) error {
 	defer dst.Close()
 
 	var hasher hash.Hash
-	if archive.IsSHA256Checksum() {
+	switch {
+	case archive.IsSHA256Checksum():
 		hasher = sha256.New()
-	} else if archive.IsSHA1Checksum() {
-		hasher = sha1.New()
-	} else {
-		return fmt.Errorf("Unsupported checksum algorithm: %s", archive.ChecksumAlgorithm)
+	case archive.IsSHA1Checksum():
+		sha1.New()
+	default:
+		return customerrors.Errorf("unsupported checksum algorithm: %s", archive.ChecksumAlgorithm)
 	}
 
 	fmt.Printf("Downloading go from %s...\n", archive.URL)
 	progressBar := console.NewProgressBar(response.ContentLength, sizeToMBString)
 
-	bytes := make([]byte, 64*1024)
+	bytes := make([]byte, downloadBufferSize)
 	finished := false
 
 	for !finished {
@@ -88,7 +92,7 @@ func Install(version string) error {
 		}
 
 		if writeCount != readCount {
-			return fmt.Errorf("failed to write file to disk")
+			return customerrors.Errorf("failed to write file to disk")
 		}
 	}
 
@@ -96,7 +100,7 @@ func Install(version string) error {
 
 	checksum := hex.EncodeToString(hasher.Sum(nil))
 	if checksum != archive.Checksum {
-		return fmt.Errorf("failed to download file, checksums don't match")
+		return customerrors.New("failed to download file, checksums don't match")
 	}
 
 	if err := archiver.Unarchive(dstPath, downloadsDir); err != nil {

@@ -1,17 +1,17 @@
 package semver
 
 import (
-	"errors"
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 )
 
 func SliceStableComparatorFor(semvers []string) (func(int, int) bool, error) {
 	for _, semver := range semvers {
 		if !IsValid(semver) {
-			return nil, fmt.Errorf("invalid semantic version: %s", semver)
+			return nil, customerrors.Errorf("invalid semantic version: %s", semver)
 		}
 	}
 
@@ -28,7 +28,7 @@ func IsValid(semver string) bool {
 
 func Latest(versions []string) (string, error) {
 	if len(versions) == 0 {
-		return "", errors.New("no versions provided")
+		return "", customerrors.New("no versions provided")
 	}
 
 	latest := versions[0]
@@ -50,13 +50,14 @@ func isOlder(semver1, semver2 string) bool {
 		return currentSegment1 < currentSegment2
 	}
 
-	if len(split1) == 1 && len(split2) == 1 {
+	switch {
+	case len(split1) == 1 && len(split2) == 1:
 		return false
-	} else if len(split1) == 1 {
+	case len(split1) == 1:
 		return true
-	} else if len(split2) == 1 {
+	case len(split2) == 1:
 		return false
+	default:
+		return isOlder(split1[1], split2[1])
 	}
-
-	return isOlder(split1[1], split2[1])
 }

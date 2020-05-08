@@ -32,6 +32,8 @@ type consoleProgressBar struct {
 	maxValueString string
 }
 
+const progressBarLength = 50
+
 func (cpb *consoleProgressBar) Increment(inc int64) {
 	if cpb.currentValue+inc > cpb.maxValue {
 		cpb.currentValue = cpb.maxValue
@@ -52,13 +54,12 @@ func (cpb *consoleProgressBar) Done() {
 }
 
 func (cpb *consoleProgressBar) buildConsoleLine() string {
-	downloadedPercentage := int(100 * cpb.currentValue / cpb.maxValue)
-	equalSigns := downloadedPercentage / 2
+	equalSigns := int(progressBarLength * cpb.currentValue / cpb.maxValue)
 	greaterSigns := 1
-	if equalSigns == 50 {
+	if equalSigns == progressBarLength {
 		greaterSigns = 0
 	}
-	spaces := 50 - equalSigns - greaterSigns
+	spaces := progressBarLength - equalSigns - greaterSigns
 
 	return fmt.Sprintf("[%s%s%s] %s/%s",
 		strings.Repeat("=", equalSigns),

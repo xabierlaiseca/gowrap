@@ -15,11 +15,12 @@ func main() {
 	installCmd, installCmdHandler := commands.NewInstallCommand(&parser.Command)
 	exitOnError(parser.Parse(os.Args))
 
-	if versionsFileCmd.Happened() {
+	switch {
+	case versionsFileCmd.Happened():
 		exitOnError(versionsFileCmdHandler())
-	} else if listCmd.Happened() {
+	case listCmd.Happened():
 		exitOnError(listCmdHandler())
-	} else if installCmd.Happened() {
+	case installCmd.Happened():
 		exitOnError(installCmdHandler())
 	}
 }

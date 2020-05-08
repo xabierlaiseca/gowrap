@@ -2,7 +2,6 @@ package versionsfile
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path"
@@ -10,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 )
 
 type platformGoArchive struct {
@@ -48,8 +48,8 @@ func download() (*remoteVersionsFile, error) {
 	}
 
 	defer response.Body.Close()
-	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("failed downloading versions file, unexpected status: %d", response.StatusCode)
+	if response.StatusCode != http.StatusOK {
+		return nil, customerrors.Errorf("failed downloading versions file, unexpected status: %d", response.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
@@ -66,6 +66,7 @@ func download() (*remoteVersionsFile, error) {
 	rvf := remoteVersionsFile{
 		versions: versions,
 	}
+
 	return &rvf, nil
 }
 
@@ -82,7 +83,7 @@ func Generate(outputPath string) error {
 		return err
 	}
 
-	return ioutil.WriteFile(outputPath, versionsBytes, 0644)
+	return ioutil.WriteFile(outputPath, versionsBytes, 0600)
 }
 
 const downloadsPageURL = "https://golang.org/dl/"
@@ -92,10 +93,10 @@ func getDownloadsPage() (*goquery.Document, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer response.Body.Close()
+
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code (%d) while getting downloads page", response.StatusCode)
+		return nil, customerrors.Errorf("unexpected status code (%d) while getting downloads page", response.StatusCode)
 	}
 
 	return goquery.NewDocumentFromReader(response.Body)
@@ -129,8 +130,8 @@ func extractArchives(versionSelection *goquery.Selection) []platformGoArchive {
 		Text()
 
 	checksumAlgorithm := strings.SplitN(checksumAlgorithmTitle, " ", 2)[0]
-	var archives []platformGoArchive
 
+	var archives []platformGoArchive
 	versionSelection.Find("tbody tr").
 		Filter(`:has(td:contains("archive"))`).
 		Each(func(_ int, archiveRowSelection *goquery.Selection) {

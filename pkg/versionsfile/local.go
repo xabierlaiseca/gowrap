@@ -26,6 +26,8 @@ func (archive *GoArchive) IsSHA1Checksum() bool {
 	return strings.ToLower(archive.ChecksumAlgorithm) == "sha1"
 }
 
+const oneDay = 24 * time.Hour
+
 func Load() (map[string]GoArchive, error) {
 	content, err := cache.Get(localVersionsCachedFile)
 	if err != nil {
@@ -34,27 +36,28 @@ func Load() (map[string]GoArchive, error) {
 
 	archivesForPlatform := make(map[string]GoArchive)
 
-	if content == nil {
-		rvf, err := download()
+	if content != nil {
+		err = json.Unmarshal(content, &archivesForPlatform)
+		return archivesForPlatform, err
+	}
+
+	rvf, err := download()
+	if err != nil {
+		return nil, err
+	}
+
+	for version, pga := range rvf.getArchivesFor(runtime.GOARCH, runtime.GOOS) {
+		archivesForPlatform[version] = pga.GoArchive
+	}
+
+	toCache, err := json.Marshal(archivesForPlatform)
+	if err == nil {
+		err = cache.Set(localVersionsCachedFile, toCache, oneDay)
 		if err != nil {
-			return nil, err
-		}
-
-		for version, pga := range rvf.getArchivesFor(runtime.GOARCH, runtime.GOOS) {
-			archivesForPlatform[version] = pga.GoArchive
-		}
-
-		toCache, err := json.Marshal(archivesForPlatform)
-		if err == nil {
-			err = cache.Set(localVersionsCachedFile, toCache, 24*time.Hour)
-			if err != nil {
-				logrus.Warningf("failed to store local versions file: %v", err)
-			}
-		} else {
-			logrus.Warningf("failed to serialise archives for caching: %v", err)
+			logrus.Warningf("failed to store local versions file: %v", err)
 		}
 	} else {
-		err = json.Unmarshal(content, &archivesForPlatform)
+		logrus.Warningf("failed to serialise archives for caching: %v", err)
 	}
 
 	return archivesForPlatform, err
