@@ -12,9 +12,9 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/mholt/archiver/v3"
+	"github.com/xabierlaiseca/gowrap/pkg/util/console"
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
 
@@ -57,18 +57,14 @@ func Install(version string) error {
 		return fmt.Errorf("Unsupported checksum algorithm: %s", archive.ChecksumAlgorithm)
 	}
 
-	totalMB := response.ContentLength / (1024 * 1024)
 	fmt.Printf("Downloading go from %s...\n", archive.URL)
-	fmt.Printf("[>%s] 0MB/%dMB", strings.Repeat(" ", 49), totalMB)
+	progressBar := console.NewProgressBar(response.ContentLength, sizeToMBString)
 
 	bytes := make([]byte, 64*1024)
-	totalRead := int64(0)
 	finished := false
 
 	for !finished {
 		readCount, err := response.Body.Read(bytes)
-		totalRead += int64(readCount)
-		downloadedPercentage := int(100 * totalRead / response.ContentLength)
 
 		if err == io.EOF {
 			finished = true
@@ -85,15 +81,7 @@ func Install(version string) error {
 			return err
 		}
 
-		equalSigns := downloadedPercentage / 2
-		greaterSigns := 1
-		if equalSigns == 50 {
-			greaterSigns = 0
-		}
-		spaces := 50 - equalSigns - greaterSigns
-		fmt.Printf("\r\033[K[%s%s%s] %dMB/%dMB", strings.Repeat("=", equalSigns),
-			strings.Repeat(">", greaterSigns), strings.Repeat(" ", spaces),
-			totalRead/(1024*1024), totalMB)
+		progressBar.Increment(int64(writeCount))
 
 		if err != nil {
 			return err
@@ -104,7 +92,8 @@ func Install(version string) error {
 		}
 	}
 
-	fmt.Println()
+	progressBar.Done()
+
 	checksum := hex.EncodeToString(hasher.Sum(nil))
 	if checksum != archive.Checksum {
 		return fmt.Errorf("failed to download file, checksums don't match")
@@ -126,4 +115,10 @@ func Install(version string) error {
 
 	fmt.Printf("Successfully installed version %s\n", version)
 	return nil
+}
+
+const oneMB = 1024 * 1024
+
+func sizeToMBString(size int64) string {
+	return fmt.Sprintf("%dMB", size/oneMB)
 }

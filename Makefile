@@ -6,7 +6,6 @@ BIN_DIR := ./bin
 pre-build:
 	go fmt ./...
 	go vet ./...
-	golangci-lint run
 
 build-init:
 	mkdir -p $(BIN_DIR)
