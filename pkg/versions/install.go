@@ -14,12 +14,38 @@ import (
 	"path/filepath"
 
 	"github.com/mholt/archiver/v3"
+	"github.com/xabierlaiseca/gowrap/pkg/semver"
 	"github.com/xabierlaiseca/gowrap/pkg/util/console"
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
 
 const downloadBufferSize = 64 * 1024
+
+func InstallLatestForPrefix(prefix string) error {
+	availableVersions, err := versionsfile.Load()
+	if err != nil {
+		return err
+	}
+
+	var compatibleVersions []string
+	for availableVersion := range availableVersions {
+		if semver.HasPrefix(availableVersion, prefix) {
+			compatibleVersions = append(compatibleVersions, availableVersion)
+		}
+	}
+
+	if len(compatibleVersions) == 0 {
+		return customerrors.NotFound()
+	}
+
+	versionToInstall, err := semver.Latest(compatibleVersions)
+	if err != nil {
+		return err
+	}
+
+	return Install(versionToInstall)
+}
 
 func Install(version string) error {
 	installableVersions, err := versionsfile.Load()
@@ -100,7 +126,7 @@ func Install(version string) error {
 
 	checksum := hex.EncodeToString(hasher.Sum(nil))
 	if checksum != archive.Checksum {
-		return customerrors.New("failed to download file, checksums don't match")
+		return customerrors.Error("failed to download file, checksums don't match")
 	}
 
 	if err := archiver.Unarchive(dstPath, downloadsDir); err != nil {

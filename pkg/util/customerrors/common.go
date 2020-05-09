@@ -1,23 +1,28 @@
 package customerrors
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
-func New(message string) error {
+func Error(message string) error {
 	return &SimpleError{message: message}
 }
 
-func NewWithCause(cause error, message string) error {
+func ErrorWithCause(cause error, message string) error {
 	return &chainedError{SimpleError: &SimpleError{message: message}, cause: cause}
 }
 
 func Errorf(format string, a ...interface{}) error {
-	return New(fmt.Sprintf(format, a...))
+	return Error(fmt.Sprintf(format, a...))
 }
 
-func NotFound(message string) *NotFoundError {
-	return &NotFoundError{
-		SimpleError: &SimpleError{message: message},
-	}
+func NotFound() error {
+	return &notFoundError{}
+}
+
+func IsNotFound(err error) bool {
+	return errors.Is(err, &notFoundError{})
 }
 
 type SimpleError struct {
@@ -37,6 +42,8 @@ func (gwe *chainedError) Unwrap() error {
 	return gwe.cause
 }
 
-type NotFoundError struct {
-	*SimpleError
+type notFoundError struct{}
+
+func (*notFoundError) Error() string {
+	return "resource not found"
 }

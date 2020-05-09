@@ -2,6 +2,9 @@ package versions
 
 import (
 	"io/ioutil"
+
+	"github.com/xabierlaiseca/gowrap/pkg/semver"
+	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 )
 
 func ListInstalled() ([]string, error) {
@@ -23,6 +26,30 @@ func ListInstalled() ([]string, error) {
 	}
 
 	return versions, nil
+}
+
+func FindLatestInstalled() (string, error) {
+	return FindLatestInstalledForPrefix("")
+}
+
+func FindLatestInstalledForPrefix(prefix string) (string, error) {
+	installedVersions, err := ListInstalled()
+	if err != nil {
+		return "", err
+	}
+
+	var compatibleVersions []string
+	for _, installedVersion := range installedVersions {
+		if semver.HasPrefix(installedVersion, prefix) {
+			compatibleVersions = append(compatibleVersions, installedVersion)
+		}
+	}
+
+	if len(compatibleVersions) == 0 {
+		return "", customerrors.NotFound()
+	}
+
+	return semver.Latest(compatibleVersions)
 }
 
 func PrintInstalled() error {

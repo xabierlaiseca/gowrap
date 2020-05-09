@@ -28,7 +28,7 @@ func IsValid(semver string) bool {
 
 func Latest(versions []string) (string, error) {
 	if len(versions) == 0 {
-		return "", customerrors.New("no versions provided")
+		return "", customerrors.Error("no versions provided")
 	}
 
 	latest := versions[0]
@@ -40,24 +40,51 @@ func Latest(versions []string) (string, error) {
 	return latest, nil
 }
 
-func isOlder(semver1, semver2 string) bool {
-	split1 := strings.SplitN(semver1, ".", 2)
-	split2 := strings.SplitN(semver2, ".", 2)
-	currentSegment1, _ := strconv.Atoi(split1[0])
-	currentSegment2, _ := strconv.Atoi(split2[0])
+func HasPrefix(version, prefix string) bool {
+	switch {
+	case len(prefix) == 0:
+		return true
+	case len(version) == 0:
+		return false
+	}
 
-	if currentSegment1 != currentSegment2 {
-		return currentSegment1 < currentSegment2
+	firstSegmentVersion, restVersion := splitFirstSegment(version)
+	firstSegmentPrefix, restPrefix := splitFirstSegment(prefix)
+
+	if firstSegmentVersion != firstSegmentPrefix {
+		return false
+	}
+
+	return HasPrefix(restVersion, restPrefix)
+}
+
+func isOlder(semver1, semver2 string) bool {
+	firstSegment1, rest1 := splitFirstSegment(semver1)
+	firstSegment2, rest2 := splitFirstSegment(semver2)
+
+	if firstSegment1 != firstSegment2 {
+		return firstSegment1 < firstSegment2
 	}
 
 	switch {
-	case len(split1) == 1 && len(split2) == 1:
+	case len(rest1) == 0 && len(rest2) == 0:
 		return false
-	case len(split1) == 1:
+	case len(rest1) == 0:
 		return true
-	case len(split2) == 1:
+	case len(rest2) == 0:
 		return false
 	default:
-		return isOlder(split1[1], split2[1])
+		return isOlder(rest1, rest2)
 	}
+}
+
+func splitFirstSegment(version string) (int, string) {
+	split := strings.SplitN(version, ".", 2)
+	segment, _ := strconv.Atoi(split[0])
+
+	if len(split) == 1 {
+		return segment, ""
+	}
+
+	return segment, split[1]
 }

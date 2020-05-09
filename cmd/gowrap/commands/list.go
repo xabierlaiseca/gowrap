@@ -18,7 +18,7 @@ func NewListCommand(parent *argparse.Command) (*argparse.Command, func() error) 
 			return installedCmdHandler()
 		}
 
-		return customerrors.New("unexpected error: subcommand for 'list' not found")
+		return customerrors.Error("unexpected error: subcommand for 'list' not found")
 	}
 }
 

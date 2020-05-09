@@ -222,3 +222,70 @@ func Test_Latest_NoVersionsProvided(t *testing.T) {
 	_, err := Latest([]string{})
 	assert.Error(t, err)
 }
+
+func Test_HasPrefix(t *testing.T) {
+	testCases := map[string]struct {
+		version  string
+		prefix   string
+		expected bool
+	}{
+		"MayorPrefix": {
+			version:  "1.14",
+			prefix:   "1",
+			expected: true,
+		},
+		"ComparesMayorAsNumber": {
+			version:  "10",
+			prefix:   "1",
+			expected: false,
+		},
+		"MayorAndMinorPrefix": {
+			version:  "1.14.2",
+			prefix:   "1.14",
+			expected: true,
+		},
+		"ComparesMinorAsNumber": {
+			version:  "1.14.2",
+			prefix:   "1.1",
+			expected: false,
+		},
+		"ComparesPatchAsNumber": {
+			version:  "1.14.12",
+			prefix:   "1.14.1",
+			expected: false,
+		},
+		"SameVersionOnlyMayor": {
+			version:  "1",
+			prefix:   "1",
+			expected: true,
+		},
+		"SameVersionMayorAndMinor": {
+			version:  "1.12",
+			prefix:   "1.12",
+			expected: true,
+		},
+		"SameVersionMayorMinorAndPatch": {
+			version:  "1.12.1",
+			prefix:   "1.12.1",
+			expected: true,
+		},
+		"PrefixWithDot": {
+			version:  "1.14",
+			prefix:   "1.",
+			expected: true,
+		},
+
+		"LongerPrefixThanVersion": {
+			version:  "1.14",
+			prefix:   "1.14.1",
+			expected: false,
+		},
+	}
+
+	for testName, testCase := range testCases {
+		t.Run(testName, func(t *testing.T) {
+			actual := HasPrefix(testCase.version, testCase.prefix)
+			assert.Equal(t, testCase.expected, actual)
+		})
+	}
+}

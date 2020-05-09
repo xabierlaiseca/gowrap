@@ -21,7 +21,7 @@ go-cmd: build-init
 bin: gowrap-cmd go-cmd
 
 ci: lint test
-build: fmt ci bin
+build: bin fmt ci
 
 clean:
 	rm -rf $(BIN_DIR)

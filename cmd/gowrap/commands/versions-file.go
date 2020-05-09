@@ -15,7 +15,7 @@ func NewVersionsFileCommand(parent *argparse.Command) (*argparse.Command, func()
 			return generateCmdHandler()
 		}
 
-		return customerrors.New("unexpected error: subcommand for 'versions-file' not found")
+		return customerrors.Error("unexpected error: subcommand for 'versions-file' not found")
 	}
 }
 
