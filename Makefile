@@ -1,7 +1,7 @@
-.DEFAULT_GOAL := build-ci
+.DEFAULT_GOAL := ci
 
 BIN_DIR := ./bin
-.PHONY: build build-gowrap build-init clean test
+.PHONY: bin build build-init ci clean generate-versions-file go-cmd gowrap-cmd lint fmt test
 
 lint:
 	golangci-lint run
@@ -12,20 +12,22 @@ fmt:
 build-init:
 	mkdir -p $(BIN_DIR)
 
-build-gowrap: build-init
+gowrap-cmd: build-init
 	go build -o $(BIN_DIR)/gowrap cmd/gowrap/main.go
 
-build-go: build-init
+go-cmd: build-init
 	go build -o $(BIN_DIR)/go cmd/go/main.go
 
-build-ci: lint test build-gowrap build-go
-build: fmt build-ci
+bin: gowrap-cmd go-cmd
+
+ci: lint test
+build: fmt ci bin
 
 clean:
-	rm -r $(BIN_DIR)
+	rm -rf $(BIN_DIR)
 
 test:
 	go test -v ./...
 
-generate-versions-file: build-gowrap
+generate-versions-file: gowrap-cmd
 	$(BIN_DIR)/gowrap versions-file generate --file data/versions.json

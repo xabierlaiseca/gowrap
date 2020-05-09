@@ -3,14 +3,19 @@ language: go
 go:
   - 1.14.x
 
-os:
-  - linux
-  - osx
-  - windows
-
-arch:
-  - amd64
-
 before_install:
   - "curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0"
-  - if [ $TRAVIS_OS_NAME = "windows" ]; then choco install make; fi
+
+deploy:
+  - provider: script
+    script: GOOS=linux GOARCH=amd64 make clean bin
+    on:
+      branch: test
+  - provider: script
+    script: GOOS=windows GOARCH=amd64 make clean bin
+    on:
+      branch: test
+  - provider: script
+    script: GOOS=darwin GOARCH=amd64 make clean bin
+    on:
+      branch: test

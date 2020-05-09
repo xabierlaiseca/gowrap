@@ -38,7 +38,7 @@ func Test_RemoteVersionsFile_GetArchivesFor(t *testing.T) {
 	}{
 		"NoVersionsForCurrentPlatform": {
 			availableVersions: map[string][]platformGoArchive{
-				"1.2.3": []platformGoArchive{
+				"1.2.3": {
 					{ARCH: otherARCH, OS: otherOS},
 				},
 			},
@@ -48,7 +48,7 @@ func Test_RemoteVersionsFile_GetArchivesFor(t *testing.T) {
 		},
 		"OneVersionsForCurrentPlatform": {
 			availableVersions: map[string][]platformGoArchive{
-				"1.2.3": []platformGoArchive{
+				"1.2.3": {
 					{ARCH: otherARCH, OS: otherOS},
 					{ARCH: thisARCH, OS: thisOS},
 				},
@@ -56,12 +56,12 @@ func Test_RemoteVersionsFile_GetArchivesFor(t *testing.T) {
 			inputARCH: thisARCH,
 			inputOS:   thisOS,
 			expectedGoArchives: map[string]platformGoArchive{
-				"1.2.3": platformGoArchive{ARCH: thisARCH, OS: thisOS},
+				"1.2.3": {ARCH: thisARCH, OS: thisOS},
 			},
 		},
 		"ArchivesForOtherPlatform": {
 			availableVersions: map[string][]platformGoArchive{
-				"1.2.3": []platformGoArchive{
+				"1.2.3": {
 					{ARCH: otherARCH, OS: otherOS},
 					{ARCH: thisARCH, OS: thisOS},
 				},
@@ -69,7 +69,7 @@ func Test_RemoteVersionsFile_GetArchivesFor(t *testing.T) {
 			inputARCH: otherARCH,
 			inputOS:   otherOS,
 			expectedGoArchives: map[string]platformGoArchive{
-				"1.2.3": platformGoArchive{ARCH: otherARCH, OS: otherOS},
+				"1.2.3": {ARCH: otherARCH, OS: otherOS},
 			},
 		},
 	}
