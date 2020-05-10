@@ -1,32 +1,23 @@
 package commands
 
 import (
-	"github.com/akamensky/argparse"
-	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
+	"github.com/alecthomas/kingpin"
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
 
-func NewVersionsFileCommand(parent *argparse.Command) (*argparse.Command, func() error) {
-	cmd := parent.NewCommand("versions-file", argparse.DisableDescription)
-	generateCmd, generateCmdHandler := newVersionsFileGenerateCommand(cmd)
-
-	return cmd, func() error {
-		if generateCmd.Happened() {
-			return generateCmdHandler()
-		}
-
-		return customerrors.Error("unexpected error: subcommand for 'versions-file' not found")
-	}
+func NewVersionsFileCommand(parent *kingpin.Application) {
+	cmd := parent.Command("versions-file", "").Hidden()
+	newVersionsFileGenerateCommand(cmd)
 }
 
-func newVersionsFileGenerateCommand(parent *argparse.Command) (*argparse.Command, func() error) {
-	cmd := parent.NewCommand("generate", argparse.DisableDescription)
-	file := cmd.String("f", "file", &argparse.Options{
-		Required: false,
-		Default:  "versions.json",
-	})
+func newVersionsFileGenerateCommand(parent *kingpin.CmdClause) {
+	cmd := parent.Command("generate", "").Hidden()
+	file := cmd.Flag("file", "output file").
+		Short('f').
+		Default("versions.json").
+		String()
 
-	return cmd, func() error {
+	cmd.Action(func(*kingpin.ParseContext) error {
 		return versionsfile.Generate(*file)
-	}
+	})
 }
