@@ -21,6 +21,6 @@ func NewInstallCommand(app *kingpin.Application) {
 			return customerrors.Errorf("Invalid version provided: %s", *version)
 		}).
 		Action(func(*kingpin.ParseContext) error {
-			return versions.Install(*version)
+			return versions.InstallLatestForPrefix(*version)
 		})
 }
