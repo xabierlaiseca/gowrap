@@ -9,13 +9,7 @@ before_install:
 deploy:
   - provider: script
     script: GOOS=linux GOARCH=amd64 make clean bin
-    on:
-      branch: test
   - provider: script
     script: GOOS=windows GOARCH=amd64 make clean bin
-    on:
-      branch: test
   - provider: script
     script: GOOS=darwin GOARCH=amd64 make clean bin
-    on:
-      branch: test
