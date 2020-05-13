@@ -33,3 +33,7 @@ issues:
       path: pkg/versions/install.go
       linters:
         - gosec
+    - text: "`wrappedCmd` is a global variable"
+      path: cmd/generic-cmd-wrapper/main.go
+      linters:
+        - gochecknoglobals

@@ -15,6 +15,8 @@ import (
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
 
+var wrappedCmd = "<not-set>"
+
 func main() {
 	wd, err := os.Getwd()
 	exitOnError(err)
@@ -25,11 +27,11 @@ func main() {
 	versionsDir, err := versions.GetVersionsDir()
 	exitOnError(err)
 
-	goBin := filepath.Join(versionsDir, version, "bin", "go")
+	goBin := filepath.Join(versionsDir, version, "bin", wrappedCmd)
 	wrapperArgs := os.Args
 	execArgs := make([]string, len(wrapperArgs))
 	copy(execArgs, wrapperArgs)
-	execArgs[0] = "go"
+	execArgs[0] = wrappedCmd
 	exitOnError(syscall.Exec(goBin, execArgs, os.Environ()))
 }
 
