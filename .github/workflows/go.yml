@@ -1,0 +1,35 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.14
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Prepare build
+      run: "curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0"
+
+    - name: Compile & test
+      run: make
+
+    - name: Linux binaries
+      run: GOOS=linux GOARCH=amd64 make clean bin
+    - name: Windows binaries
+      run: GOOS=windows GOARCH=amd64 make clean bin
+    - name: OSX binaries
+      run: GOOS=darwin GOARCH=amd64 make clean bin
