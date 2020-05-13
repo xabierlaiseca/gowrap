@@ -1,0 +1,24 @@
+name: Releases
+
+on: 
+  push:
+    tags:
+    - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      
+    - name: Linux archive
+      run: GOOS=linux GOARCH=amd64 make clean build-archive
+    - name: Windows archive
+      run: GOOS=windows GOARCH=amd64 make clean build-archive
+    - name: OSX archive
+      run: GOOS=darwin GOARCH=amd64 make clean build-archive
+      
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "dist/*.tar.gz"
+        token: ${{ secrets.GITHUB_TOKEN }}
