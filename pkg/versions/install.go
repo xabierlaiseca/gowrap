@@ -155,8 +155,7 @@ func Uninstall(version string) error {
 
 	versionDir := filepath.Join(versionsDir, version)
 
-	_, err = os.Stat(versionDir)
-	if os.IsNotExist(err) {
+	if _, err = os.Stat(versionDir); os.IsNotExist(err) {
 		return customerrors.Errorf("version %s was not previously installed", version)
 	} else if err != nil {
 		return err

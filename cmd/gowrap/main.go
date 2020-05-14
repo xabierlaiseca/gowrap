@@ -13,6 +13,7 @@ func main() {
 	commands.NewListCommand(app)
 	commands.NewInstallCommand(app)
 	commands.NewUninstallCommand(app)
+	commands.NewConfigureCommand(app)
 
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 }
