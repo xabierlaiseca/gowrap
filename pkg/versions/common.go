@@ -6,21 +6,19 @@ import (
 	"path/filepath"
 	"sort"
 
+	"github.com/xabierlaiseca/gowrap/pkg/common"
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
 )
 
-const (
-	gowrapDir   = ".gowrap"
-	versionsDir = "versions"
-)
+const versionsDir = "versions"
 
 func GetVersionsDir() (string, error) {
-	userHome, err := os.UserHomeDir()
+	gowrapDir, err := common.GetGowrapDir()
 	if err != nil {
 		return "", err
 	}
 
-	dir := filepath.Join(userHome, gowrapDir, versionsDir)
+	dir := filepath.Join(gowrapDir, versionsDir)
 	return dir, os.MkdirAll(dir, 0755)
 }
 
