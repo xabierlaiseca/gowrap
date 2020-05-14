@@ -147,6 +147,24 @@ func Install(version string) error {
 	return nil
 }
 
+func Uninstall(version string) error {
+	versionsDir, err := GetVersionsDir()
+	if err != nil {
+		return err
+	}
+
+	versionDir := filepath.Join(versionsDir, version)
+
+	_, err = os.Stat(versionDir)
+	if os.IsNotExist(err) {
+		return customerrors.Errorf("version %s was not previously installed", version)
+	} else if err != nil {
+		return err
+	}
+
+	return os.RemoveAll(versionDir)
+}
+
 const oneMB = 1024 * 1024
 
 func sizeToMBString(size int64) string {
