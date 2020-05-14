@@ -12,6 +12,7 @@ func main() {
 	commands.NewVersionsFileCommand(app)
 	commands.NewListCommand(app)
 	commands.NewInstallCommand(app)
+	commands.NewUninstallCommand(app)
 
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 }

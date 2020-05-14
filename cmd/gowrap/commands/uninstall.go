@@ -7,9 +7,9 @@ import (
 	"github.com/xabierlaiseca/gowrap/pkg/versions"
 )
 
-func NewInstallCommand(app *kingpin.Application) {
-	cmd := app.Command("install", "install go version")
-	version := cmd.Arg("version", "version to install").
+func NewUninstallCommand(app *kingpin.Application) {
+	cmd := app.Command("uninstall", "uninstall go version")
+	version := cmd.Arg("version", "version to uninstall").
 		Required().
 		String()
 
@@ -18,9 +18,9 @@ func NewInstallCommand(app *kingpin.Application) {
 			if len(*version) == 0 || semver.IsValid(*version) {
 				return nil
 			}
-			return customerrors.Errorf("invalid version provided: %s", *version)
+			return customerrors.Errorf("Invalid version provided: %s", *version)
 		}).
 		Action(func(*kingpin.ParseContext) error {
-			return versions.InstallLatestForPrefix(*version)
+			return versions.Uninstall(*version)
 		})
 }
