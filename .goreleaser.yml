@@ -1,0 +1,64 @@
+project_name: gowrap
+
+before:
+  hooks:
+    - go mod download
+    # - go generate ./...
+
+builds:
+  - id: gowrap
+    main: cmd/gowrap/main.go
+    binary: gowrap
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    ldflags:
+      - "-s"
+      - "-w"
+  - id: go
+    main: cmd/generic-cmd-wrapper/main.go
+    binary: go
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    ldflags:
+      - "-s"
+      - "-w"
+      - "-X 'main.wrappedCmd=go'"
+  - id: gofmt
+    main: cmd/generic-cmd-wrapper/main.go
+    binary: gofmt
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    ldflags:
+      - "-s"
+      - "-w"
+      - "-X 'main.wrappedCmd=gofmt'"
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+
+release:
+  github:
+    owner: xabierlaiseca
+    name: gowrap
