@@ -1,11 +1,9 @@
 .DEFAULT_GOAL := ci
 WRAPPED_COMMANDS := go gofmt
-VERSION ?= "0.0.0"
 
 BIN_DIR := ./bin
-DIST_DIR := ./dist
 
-.PHONY: bin build build-archive build-init ci clean cmd-wrappers generate-versions-file gowrap-cmd lint fmt test
+.PHONY: bin build build-init ci clean cmd-wrappers generate-versions-file gowrap-cmd lint fmt test
 
 lint:
 	golangci-lint run
@@ -31,14 +29,9 @@ build: bin fmt ci
 
 clean:
 	rm -rf $(BIN_DIR)
-	rm -rf $(DIST_DIR)
 
 test:
 	go test -v ./...
 
 generate-versions-file: gowrap-cmd
 	$(BIN_DIR)/gowrap versions-file generate --file data/versions.json
-
-build-archive: bin
-	mkdir -p $(DIST_DIR)
-	tar -czvf $(DIST_DIR)/gowrap-$(VERSION)-$$GOOS-$$GOARCH.tar.gz -C $(BIN_DIR) .
