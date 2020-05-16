@@ -16,6 +16,7 @@ func newConfigureDefaultCommand(parent *kingpin.CmdClause) {
 	cmd := parent.Command("default", "Configure the default go version to use")
 	version := cmd.Arg("version", "version to use as default").
 		Required().
+		HintAction(availableVersionCompletion).
 		String()
 
 	cmd.
