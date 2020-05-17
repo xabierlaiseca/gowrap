@@ -9,11 +9,12 @@ import (
 
 func main() {
 	app := kingpin.New("gowrap", "Utility to manage installed go versions")
-	commands.NewVersionsFileCommand(app)
-	commands.NewListCommand(app)
-	commands.NewInstallCommand(app)
-	commands.NewUninstallCommand(app)
 	commands.NewConfigureCommand(app)
+	commands.NewInstallCommand(app)
+	commands.NewListCommand(app)
+	commands.NewProjectCommand(app)
+	commands.NewUninstallCommand(app)
+	commands.NewVersionsFileCommand(app)
 
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 }

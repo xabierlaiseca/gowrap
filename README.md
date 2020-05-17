@@ -21,12 +21,16 @@ call the desired specific version of the executed command.
 
 In order to decide which version to use, wrapper commands will follow these
 rules:
-1. If current directory is a Go module project:
-   1. If no compatible version installed, it will suggest the user to install
-      latest compatible version and use it
-   1. If compatible versions are installed, it will use latest compatible version
-1. If not in go modules project:
+1. If current directory is part of a Go project:
+   1. If `.go-version` exists in project root, it will select the version
+      defined in that file as candidate. Otherwise, it will select the version
+      defined in `go.mod`
+   1. If no matching version installed for selected version, it will suggest
+      the user to install latest compatible version and use it
+   1. If compatible versions are installed for selected version, it will use
+      latest compatible version
+1. If not in go project:
    1. If default version configured, it will use that version
-   1. If no versions installed, it will suggest to install latest Go version and
-      it will use it
+   1. If no versions installed, it will suggest to install latest Go version
+      and it will use it
    1. Otherwise, it will use latest installed Go version
