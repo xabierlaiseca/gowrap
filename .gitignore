@@ -17,3 +17,6 @@
 # Build
 /bin
 /dist
+
+#IntelliJ idea
+/.idea

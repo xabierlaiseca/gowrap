@@ -22,10 +22,13 @@ import (
 
 const downloadBufferSize = 64 * 1024
 
-func InstallLatestForPrefix(prefix string) error {
+// InstallLatestIfNotInstalled installs latest version for given prefix if not already installed.
+// If no error, `true` will be returned if the version was installed or `false` if the version
+// was already available.
+func InstallLatestIfNotInstalled(prefix string) (bool, error) {
 	availableVersions, err := versionsfile.Load()
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	var compatibleVersions []string
@@ -36,47 +39,91 @@ func InstallLatestForPrefix(prefix string) error {
 	}
 
 	if len(compatibleVersions) == 0 {
-		return customerrors.NotFound()
+		return false, customerrors.NotFound()
 	}
 
 	versionToInstall, err := semver.Latest(compatibleVersions)
 	if err != nil {
-		return err
+		return false, err
 	}
 
-	return Install(versionToInstall)
+	return InstallIfNotInstalled(versionToInstall)
 }
 
-func Install(version string) error {
+// InstallIfNotInstalled installs the requested version if not already installed.
+// If no error, `true` will be returned if the version was installed or `false` if the version
+// was already available.
+func InstallIfNotInstalled(version string) (bool, error) {
+	versionsDir, err := GetVersionsDir()
+	if err != nil {
+		return false, err
+	}
+
+	if alreadyInstalled, err := isVersionInstalled(versionsDir, version); err != nil {
+		return false, err
+	} else if alreadyInstalled {
+		return false, nil
+	}
+
 	installableVersions, err := versionsfile.Load()
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	archive, found := installableVersions[version]
 	if !found {
-		return customerrors.Errorf("version %s is not available", version)
+		return false, customerrors.Errorf("version %s is not available", version)
 	}
 
 	response, err := http.Get(archive.URL)
 	if err != nil {
-		return err
+		return false, err
 	}
 	defer response.Body.Close()
 
 	downloadsDir, err := ioutil.TempDir(os.TempDir(), "gowrap-download-")
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	filename := path.Base(archive.URL)
 	dstPath := filepath.Join(downloadsDir, filename)
-	dst, err := os.Create(dstPath)
+
+	if err := storeDownload(response, dstPath, archive); err != nil {
+		return false, err
+	}
+
+	if err := archiver.Unarchive(dstPath, downloadsDir); err != nil {
+		return false, err
+	}
+
+	destinationDir := filepath.Join(versionsDir, version)
+	if err := os.Rename(filepath.Join(downloadsDir, "go"), destinationDir); err != nil {
+		return false, err
+	}
+
+	fmt.Printf("Successfully installed version %s\n", version)
+	return true, nil
+}
+
+func Uninstall(version string) error {
+	versionsDir, err := GetVersionsDir()
 	if err != nil {
 		return err
 	}
-	defer dst.Close()
 
+	versionDir := filepath.Join(versionsDir, version)
+
+	if _, err = os.Stat(versionDir); os.IsNotExist(err) {
+		return customerrors.Errorf("version %s was not previously installed", version)
+	} else if err != nil {
+		return err
+	}
+
+	return os.RemoveAll(versionDir)
+}
+
+func storeDownload(response *http.Response, dstPath string, archive versionsfile.GoArchive) error {
 	var hasher hash.Hash
 	switch {
 	case archive.IsSHA256Checksum():
@@ -86,6 +133,12 @@ func Install(version string) error {
 	default:
 		return customerrors.Errorf("unsupported checksum algorithm: %s", archive.ChecksumAlgorithm)
 	}
+
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
 
 	fmt.Printf("Downloading go from %s...\n", archive.URL)
 	progressBar := console.NewProgressBar(response.ContentLength, sizeToMBString)
@@ -113,10 +166,6 @@ func Install(version string) error {
 
 		progressBar.Increment(int64(writeCount))
 
-		if err != nil {
-			return err
-		}
-
 		if writeCount != readCount {
 			return customerrors.Errorf("failed to write file to disk")
 		}
@@ -129,43 +178,32 @@ func Install(version string) error {
 		return customerrors.Error("failed to download file, checksums don't match")
 	}
 
-	if err := archiver.Unarchive(dstPath, downloadsDir); err != nil {
-		return err
-	}
-
-	versionsDir, err := GetVersionsDir()
-	if err != nil {
-		return err
-	}
-
-	destinationDir := filepath.Join(versionsDir, version)
-	if err := os.Rename(filepath.Join(downloadsDir, "go"), destinationDir); err != nil {
-		return err
-	}
-
-	fmt.Printf("Successfully installed version %s\n", version)
 	return nil
-}
-
-func Uninstall(version string) error {
-	versionsDir, err := GetVersionsDir()
-	if err != nil {
-		return err
-	}
-
-	versionDir := filepath.Join(versionsDir, version)
-
-	if _, err = os.Stat(versionDir); os.IsNotExist(err) {
-		return customerrors.Errorf("version %s was not previously installed", version)
-	} else if err != nil {
-		return err
-	}
-
-	return os.RemoveAll(versionDir)
 }
 
 const oneMB = 1024 * 1024
 
 func sizeToMBString(size int64) string {
 	return fmt.Sprintf("%dMB", size/oneMB)
+}
+
+func isVersionInstalled(versionsDir, version string) (bool, error) {
+	versionDir := filepath.Join(versionsDir, version)
+
+	stat, err := os.Stat(versionDir)
+	switch {
+	case os.IsNotExist(err):
+		return false, nil
+	case err != nil:
+		return false, err
+	case !stat.IsDir():
+		return false, customerrors.Errorf("unexpected file in %s, it should be removed for proper functioning of this tool", versionDir)
+	}
+
+	goBinPath := filepath.Join(versionDir, "bin", "go")
+	if stat, err := os.Stat(goBinPath); err == nil && stat.Mode().IsRegular() {
+		return true, nil
+	}
+
+	return false, customerrors.Errorf("unexpected content in %s, it should be removed for proper functioning of this tool", versionDir)
 }

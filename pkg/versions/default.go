@@ -8,7 +8,7 @@ import (
 func SetDefaultVersion(version string) error {
 	_, err := FindLatestInstalledForPrefix(version)
 	if customerrors.IsNotFound(err) {
-		if err = InstallLatestForPrefix(version); customerrors.IsNotFound(err) {
+		if _, err = InstallLatestIfNotInstalled(version); customerrors.IsNotFound(err) {
 			return customerrors.Errorf("%s is not a valid go version", version)
 		} else if err != nil {
 			return err
