@@ -10,7 +10,7 @@ import (
 )
 
 func NewInstallCommand(app *kingpin.Application) {
-	versionManagementCommand(app, "install", notInstalledVersionCompletion, versions.InstallLatestForPrefix)
+	versionManagementCommand(app, "install", notInstalledVersionCompletion, installVersion)
 }
 
 func NewUninstallCommand(app *kingpin.Application) {
@@ -34,4 +34,14 @@ func versionManagementCommand(app *kingpin.Application, name string, hintFn func
 		Action(func(*kingpin.ParseContext) error {
 			return actionFn(*version)
 		})
+}
+
+func installVersion(prefix string) error {
+	if installed, err := versions.InstallLatestIfNotInstalled(prefix); err != nil {
+		return err
+	} else if !installed {
+		fmt.Printf("version '%s' was already installed\n", prefix)
+	}
+
+	return nil
 }

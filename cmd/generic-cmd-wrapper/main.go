@@ -87,7 +87,8 @@ func installIfAccepted(version string) (string, error) {
 	}
 
 	if accepted {
-		return candidate, versions.Install(candidate)
+		_, err := versions.InstallIfNotInstalled(candidate)
+		return candidate, err
 	}
 
 	return "", customerrors.Errorf("no versions available for go %s installed", version)
