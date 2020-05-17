@@ -33,10 +33,10 @@ jobs:
           git config --local user.name "Generate Versions File Action"
           git add data/versions.json
           git commit -m "new versions file $(date +%F)"
-        if: ${{ steps.check-versions-file.outcome == "failure" }}
+        if: "steps.check-versions-file.outcome == 'failure'"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ steps.check-versions-file.outcome == "failure" }}
+        if: "steps.check-versions-file.outcome == 'failure'"
