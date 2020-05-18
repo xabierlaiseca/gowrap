@@ -32,7 +32,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "Generate Versions File Action"
           git add data/versions.json
-          git commit -m "new versions file $(date +%F)"
+          git commit -m "new versions file $(date +%F) [skip ci]"
         if: "steps.check-versions-file.outcome == 'failure'"
 
       - name: Push changes
