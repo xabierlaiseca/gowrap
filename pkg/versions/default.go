@@ -5,17 +5,17 @@ import (
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 )
 
-func SetDefaultVersion(version string) error {
-	_, err := FindLatestInstalledForPrefix(version)
+func SetDefaultVersion(gowrapHome, version string) error {
+	_, err := FindLatestInstalledForPrefix(gowrapHome, version)
 	if customerrors.IsNotFound(err) {
-		if _, err = InstallLatestIfNotInstalled(version); customerrors.IsNotFound(err) {
+		if _, err = InstallLatestIfNotInstalled(gowrapHome, version); customerrors.IsNotFound(err) {
 			return customerrors.Errorf("%s is not a valid go version", version)
 		} else if err != nil {
 			return err
 		}
 	}
 
-	configuration, err := config.Load()
+	configuration, err := config.Load(gowrapHome)
 	if err != nil {
 		return err
 	}

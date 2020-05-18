@@ -10,7 +10,7 @@ import (
 	"github.com/xabierlaiseca/gowrap/pkg/versions"
 )
 
-func DetectVersion(path string) (string, error) {
+func DetectVersion(gowrapHome, path string) (string, error) {
 	p := filepath.Clean(path)
 	info, err := os.Stat(p)
 	if err != nil {
@@ -23,7 +23,7 @@ func DetectVersion(path string) (string, error) {
 
 	projectRoot, err := findProjectRoot(p)
 	if customerrors.IsNotFound(err) {
-		configuration, err := config.Load()
+		configuration, err := config.Load(gowrapHome)
 		if err != nil {
 			return "", err
 		}
@@ -32,7 +32,7 @@ func DetectVersion(path string) (string, error) {
 			return trimmedDefault, nil
 		}
 
-		return versions.FindLatestInstalled()
+		return versions.FindLatestInstalled(gowrapHome)
 	} else if err != nil {
 		return "", err
 	}

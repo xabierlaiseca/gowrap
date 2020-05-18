@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"github.com/xabierlaiseca/gowrap/cmd/common"
 	"github.com/xabierlaiseca/gowrap/pkg/versions"
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
@@ -12,7 +13,12 @@ func availableVersionCompletion() []string {
 }
 
 func installedVersionCompletion() []string {
-	installed, err := versions.ListInstalled()
+	gowrapHome, err := common.GetGowrapHome()
+	if err != nil {
+		return []string{}
+	}
+
+	installed, err := versions.ListInstalled(gowrapHome)
 	if err != nil {
 		return []string{}
 	}
@@ -21,7 +27,12 @@ func installedVersionCompletion() []string {
 }
 
 func notInstalledVersionCompletion() []string {
-	installed, err := versions.ListInstalled()
+	gowrapHome, err := common.GetGowrapHome()
+	if err != nil {
+		return []string{}
+	}
+
+	installed, err := versions.ListInstalled(gowrapHome)
 	if err != nil {
 		return []string{}
 	}

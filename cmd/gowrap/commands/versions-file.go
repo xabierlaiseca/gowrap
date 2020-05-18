@@ -5,7 +5,7 @@ import (
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
 
-func NewVersionsFileCommand(parent *kingpin.Application) {
+func newVersionsFileCommand(parent *kingpin.Application) {
 	cmd := parent.Command("versions-file", "").Hidden()
 	newVersionsFileGenerateCommand(cmd)
 }

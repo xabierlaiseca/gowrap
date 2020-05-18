@@ -25,7 +25,7 @@ const downloadBufferSize = 64 * 1024
 // InstallLatestIfNotInstalled installs latest version for given prefix if not already installed.
 // If no error, `true` will be returned if the version was installed or `false` if the version
 // was already available.
-func InstallLatestIfNotInstalled(prefix string) (bool, error) {
+func InstallLatestIfNotInstalled(gowrapHome, prefix string) (bool, error) {
 	availableVersions, err := versionsfile.Load()
 	if err != nil {
 		return false, err
@@ -47,14 +47,14 @@ func InstallLatestIfNotInstalled(prefix string) (bool, error) {
 		return false, err
 	}
 
-	return InstallIfNotInstalled(versionToInstall)
+	return InstallIfNotInstalled(gowrapHome, versionToInstall)
 }
 
 // InstallIfNotInstalled installs the requested version if not already installed.
 // If no error, `true` will be returned if the version was installed or `false` if the version
 // was already available.
-func InstallIfNotInstalled(version string) (bool, error) {
-	versionsDir, err := GetVersionsDir()
+func InstallIfNotInstalled(gowrapHome, version string) (bool, error) {
+	versionsDir, err := GetVersionsDir(gowrapHome)
 	if err != nil {
 		return false, err
 	}
@@ -106,8 +106,8 @@ func InstallIfNotInstalled(version string) (bool, error) {
 	return true, nil
 }
 
-func Uninstall(version string) error {
-	versionsDir, err := GetVersionsDir()
+func Uninstall(gowrapHome, version string) error {
+	versionsDir, err := GetVersionsDir(gowrapHome)
 	if err != nil {
 		return err
 	}

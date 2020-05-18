@@ -5,9 +5,10 @@ import (
 	"testing"
 	"time"
 
+	"io/ioutil"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"io/ioutil"
 )
 
 type Verification func(*testing.T, string, string)

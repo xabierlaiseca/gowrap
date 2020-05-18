@@ -5,8 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-
-	"github.com/xabierlaiseca/gowrap/pkg/common"
 )
 
 const (
@@ -14,14 +12,12 @@ const (
 )
 
 type Configuration struct {
+	gowrapHome     string
 	DefaultVersion string `json:"defaultVersion,omitempty"`
 }
 
-func Load() (*Configuration, error) {
-	configFilePath, err := getConfigFilePath()
-	if err != nil {
-		return nil, err
-	}
+func Load(gowrapHome string) (*Configuration, error) {
+	configFilePath := getConfigFilePath(gowrapHome)
 
 	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
 		return &Configuration{}, nil
@@ -45,6 +41,7 @@ func Load() (*Configuration, error) {
 		return nil, err
 	}
 
+	config.gowrapHome = gowrapHome
 	return config, nil
 }
 
@@ -54,10 +51,7 @@ func (c *Configuration) Save() error {
 		return err
 	}
 
-	configFilePath, err := getConfigFilePath()
-	if err != nil {
-		return err
-	}
+	configFilePath := getConfigFilePath(c.gowrapHome)
 
 	configFile, err := os.OpenFile(configFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
@@ -69,11 +63,6 @@ func (c *Configuration) Save() error {
 	return err
 }
 
-func getConfigFilePath() (string, error) {
-	gowrapDir, err := common.GetGowrapDir()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(gowrapDir, configFileName), nil
+func getConfigFilePath(gowrapHome string) string {
+	return filepath.Join(gowrapHome, configFileName)
 }

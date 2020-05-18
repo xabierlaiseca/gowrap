@@ -5,10 +5,10 @@ import (
 	"github.com/xabierlaiseca/gowrap/pkg/versions"
 )
 
-func NewListCommand(app *kingpin.Application) {
+func newListCommand(app *kingpin.Application, gowrapHome string) {
 	cmd := app.Command("list", "List operations")
 	newListAvailableCommand(cmd)
-	newListInstalledCommand(cmd)
+	newListInstalledCommand(cmd, gowrapHome)
 }
 
 func newListAvailableCommand(parent *kingpin.CmdClause) {
@@ -18,9 +18,9 @@ func newListAvailableCommand(parent *kingpin.CmdClause) {
 		})
 }
 
-func newListInstalledCommand(parent *kingpin.CmdClause) {
+func newListInstalledCommand(parent *kingpin.CmdClause, gowrapHome string) {
 	parent.Command("installed", "Lists installed go versions").
 		Action(func(*kingpin.ParseContext) error {
-			return versions.PrintInstalled()
+			return versions.PrintInstalled(gowrapHome)
 		})
 }
