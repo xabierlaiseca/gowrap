@@ -11,7 +11,10 @@ import (
 
 func PinVersion(path string, version string) error {
 	projectRoot, err := findProjectRoot(path)
-	if err != nil {
+	if customerrors.IsNotFound(err) {
+		logrus.Warning("Cannot pin version, currently not in a Go project")
+		return nil
+	} else if err != nil {
 		return err
 	}
 
@@ -30,4 +33,25 @@ func PinVersion(path string, version string) error {
 
 	_, err = file.Write([]byte(version))
 	return err
+}
+
+func UnpinVersion(path string) error {
+	projectRoot, err := findProjectRoot(path)
+	if customerrors.IsNotFound(err) {
+		logrus.Warning("Cannot unpin version, currently not in a Go project")
+		return nil
+	} else if err != nil {
+		return err
+	}
+
+	goVersionPath := filepath.Join(projectRoot, goVersionFile)
+	_, err = os.Stat(goVersionPath)
+	if os.IsNotExist(err) {
+		logrus.Warning("Cannot unpin version, no version pinned for current project")
+		return nil
+	} else if err != nil {
+		return err
+	}
+
+	return os.RemoveAll(goVersionPath)
 }

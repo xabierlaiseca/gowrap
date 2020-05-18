@@ -13,6 +13,7 @@ import (
 func NewProjectCommand(app *kingpin.Application) {
 	cmd := app.Command("project", "Project operations")
 	newProjectPinCommand(cmd)
+	newProjectUnpinCommand(cmd)
 }
 
 func newProjectPinCommand(parent *kingpin.CmdClause) {
@@ -36,5 +37,17 @@ func newProjectPinCommand(parent *kingpin.CmdClause) {
 			}
 
 			return project.PinVersion(wd, *version)
+		})
+}
+
+func newProjectUnpinCommand(parent *kingpin.CmdClause) {
+	parent.Command("unpin", "Unpin specific version for current project").
+		Action(func(*kingpin.ParseContext) error {
+			wd, err := os.Getwd()
+			if err != nil {
+				return err
+			}
+
+			return project.UnpinVersion(wd)
 		})
 }
