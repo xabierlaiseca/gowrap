@@ -1,20 +1,27 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/alecthomas/kingpin"
 	"github.com/xabierlaiseca/gowrap/cmd/gowrap/commands"
+
+	"github.com/xabierlaiseca/gowrap/cmd/common"
 )
 
 func main() {
-	app := kingpin.New("gowrap", "Utility to manage installed go versions")
-	commands.NewConfigureCommand(app)
-	commands.NewInstallCommand(app)
-	commands.NewListCommand(app)
-	commands.NewProjectCommand(app)
-	commands.NewUninstallCommand(app)
-	commands.NewVersionsFileCommand(app)
+	gowrapHome, err := common.GetGowrapHome()
+	exitOnError(err)
 
-	kingpin.MustParse(app.Parse(os.Args[1:]))
+	wd, err := os.Getwd()
+	exitOnError(err)
+
+	exitOnError(commands.RunCli(gowrapHome, wd, os.Args[1:]))
+}
+
+func exitOnError(err error) {
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
 }

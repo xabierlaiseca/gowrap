@@ -7,8 +7,8 @@ import (
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 )
 
-func ListInstalled() ([]string, error) {
-	versionsDir, err := GetVersionsDir()
+func ListInstalled(gowrapHome string) ([]string, error) {
+	versionsDir, err := GetVersionsDir(gowrapHome)
 	if err != nil {
 		return nil, err
 	}
@@ -28,12 +28,12 @@ func ListInstalled() ([]string, error) {
 	return versions, nil
 }
 
-func FindLatestInstalled() (string, error) {
-	return FindLatestInstalledForPrefix("")
+func FindLatestInstalled(gowrapHome string) (string, error) {
+	return FindLatestInstalledForPrefix(gowrapHome, "")
 }
 
-func FindLatestInstalledForPrefix(prefix string) (string, error) {
-	installedVersions, err := ListInstalled()
+func FindLatestInstalledForPrefix(gowrapHome, prefix string) (string, error) {
+	installedVersions, err := ListInstalled(gowrapHome)
 	if err != nil {
 		return "", err
 	}
@@ -52,8 +52,8 @@ func FindLatestInstalledForPrefix(prefix string) (string, error) {
 	return semver.Latest(compatibleVersions)
 }
 
-func PrintInstalled() error {
-	versions, err := ListInstalled()
+func PrintInstalled(gowrapHome string) error {
+	versions, err := ListInstalled(gowrapHome)
 	if err != nil {
 		return nil
 	}

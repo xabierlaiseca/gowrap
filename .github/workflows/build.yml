@@ -28,6 +28,9 @@ jobs:
       - name: Compile & test
         run: make
 
+      - name: Integration test
+        run: make test-integration
+
       - name: run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:

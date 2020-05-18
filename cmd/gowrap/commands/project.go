@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"os"
 	"strings"
 
 	"github.com/alecthomas/kingpin"
@@ -10,13 +9,13 @@ import (
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 )
 
-func NewProjectCommand(app *kingpin.Application) {
+func newProjectCommand(app *kingpin.Application, wd string) {
 	cmd := app.Command("project", "Project operations")
-	newProjectPinCommand(cmd)
-	newProjectUnpinCommand(cmd)
+	newProjectPinCommand(cmd, wd)
+	newProjectUnpinCommand(cmd, wd)
 }
 
-func newProjectPinCommand(parent *kingpin.CmdClause) {
+func newProjectPinCommand(parent *kingpin.CmdClause, wd string) {
 	cmd := parent.Command("pin", "Pin specific version for current project")
 	version := cmd.Arg("version", "version to pin").
 		Required().
@@ -31,23 +30,13 @@ func newProjectPinCommand(parent *kingpin.CmdClause) {
 			return customerrors.Errorf("invalid version provided: %s, 'a.b.c' like version required", *version)
 		}).
 		Action(func(*kingpin.ParseContext) error {
-			wd, err := os.Getwd()
-			if err != nil {
-				return err
-			}
-
 			return project.PinVersion(wd, *version)
 		})
 }
 
-func newProjectUnpinCommand(parent *kingpin.CmdClause) {
+func newProjectUnpinCommand(parent *kingpin.CmdClause, wd string) {
 	parent.Command("unpin", "Unpin specific version for current project").
 		Action(func(*kingpin.ParseContext) error {
-			wd, err := os.Getwd()
-			if err != nil {
-				return err
-			}
-
 			return project.UnpinVersion(wd)
 		})
 }

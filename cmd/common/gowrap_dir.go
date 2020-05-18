@@ -7,7 +7,7 @@ import (
 
 const gowrapDir = ".gowrap"
 
-func GetGowrapDir() (string, error) {
+func GetGowrapHome() (string, error) {
 	userHome, err := os.UserHomeDir()
 	if err != nil {
 		return "", err

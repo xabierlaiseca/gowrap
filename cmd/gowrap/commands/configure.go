@@ -7,12 +7,12 @@ import (
 	"github.com/xabierlaiseca/gowrap/pkg/versions"
 )
 
-func NewConfigureCommand(app *kingpin.Application) {
+func newConfigureCommand(app *kingpin.Application, gowrapHome string) {
 	cmd := app.Command("configure", "configuration related operations")
-	newConfigureDefaultCommand(cmd)
+	newConfigureDefaultCommand(cmd, gowrapHome)
 }
 
-func newConfigureDefaultCommand(parent *kingpin.CmdClause) {
+func newConfigureDefaultCommand(parent *kingpin.CmdClause, gowrapHome string) {
 	cmd := parent.Command("default", "Configure the default go version to use")
 	version := cmd.Arg("version", "version to use as default").
 		Required().
@@ -28,6 +28,6 @@ func newConfigureDefaultCommand(parent *kingpin.CmdClause) {
 		})
 
 	cmd.Action(func(*kingpin.ParseContext) error {
-		return versions.SetDefaultVersion(*version)
+		return versions.SetDefaultVersion(gowrapHome, *version)
 	})
 }

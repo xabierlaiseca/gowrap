@@ -3,7 +3,7 @@ WRAPPED_COMMANDS := go gofmt
 
 BIN_DIR := ./bin
 
-.PHONY: bin build build-init ci clean cmd-wrappers generate-versions-file gowrap-cmd lint fmt test
+.PHONY: bin build build-init ci clean cmd-wrappers generate-versions-file gowrap-cmd lint fmt test test-integration
 
 lint:
 	golangci-lint run
@@ -32,6 +32,9 @@ clean:
 
 test:
 	go test -v ./...
+
+test-integration:
+	go test -v --tags=integration pkg/integration/*_test.go
 
 generate-versions-file: gowrap-cmd
 	$(BIN_DIR)/gowrap versions-file generate --file data/versions.json
