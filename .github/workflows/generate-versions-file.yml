@@ -24,7 +24,7 @@ jobs:
 
       - id: check-versions-file
         name: Check if changes in versions file
-        run: git diff-index HEAD data/versions.json
+        run: git diff-index --exit-code HEAD data/versions.json
         continue-on-error: true
 
       - name: Commit files
