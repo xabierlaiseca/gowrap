@@ -58,6 +58,7 @@ changelog:
     - '^docs:'
     - '^test:'
     - '\[skip changelog\]'
+    - '\[skip ci\]'
 
 release:
   github:
