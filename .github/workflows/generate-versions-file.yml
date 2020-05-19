@@ -15,9 +15,16 @@ jobs:
 
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
+        with:
+          repository: xabot/gowrap
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
 
-      - name: Unshallow
-        run: git fetch --prune --unshallow
+      - name: Fetch latest code
+        run: |
+          git remote add upstream https://github.com/$GITHUB_REPOSITORY
+          git fetch upstream master
+          git rebase upstream/master
+          git push origin master
 
       - name: Generate versions file
         run: make generate-versions-file
@@ -27,35 +34,50 @@ jobs:
         run: git diff-index --exit-code HEAD data/versions.json
         continue-on-error: true
 
+      - name: Install hub
+        run: "curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.2"
+        if: "steps.check-versions-file.outcome == 'failure'"
+
       - name: Publish changes
         run: |
           set -eu
 
-          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
-          git config --local user.name "Generate Versions File - ${{ github.actor }}"
-          git checkout -b new-versions-$(date +%F)
+          git config --local user.email "xabier+bot@laiseca.me"
+          git config --local user.name "xabot"
+
+          BRANCH_NAME=new-versions-$(date +%F)
+          git checkout -b $BRANCH_NAME
           git add data/versions.json
-          git commit -m "new versions file $(date +%F) [skip ci]"
+          git commit -m "new versions file $(date +%F) [skip changelog]"
 
-          curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
-          hub pull-request -p --no-edit --labels versions
-          export PR_NUMBER=$(hub pr show -f %I)
+          hub pull-request -p --no-edit --labels versions --head xabot:$BRANCH_NAME --base xabierlaiseca:master --no-maintainer-edits
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        if: "steps.check-versions-file.outcome == 'failure'"
 
-          pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-          hub ci-status #$PR_NUMBER
+      - name: Merge PR
+        run: |
+          set -eu
+          PR_NUMBER=$(hub pr show -f %I)
+
+          set +e
+
+          hub ci-status #$PR_NUMBER 1>/dev/null
           CI_STATUS=$?
 
           while [ $CI_STATUS -gt 1 ]; do
             sleep 5
-            hub ci-status #$PR_NUMBER
+            hub ci-status #$PR_NUMBER 1>/dev/null
             CI_STATUS=$?
           done
+
+          set -e
 
           if [ $CI_STATUS -ne 0 ]; then
             exit $CI_STATUS
           fi
 
-          hub api -XPUT "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/merge"
+          hub api -XPUT --field merge_method=rebase "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/merge"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: "steps.check-versions-file.outcome == 'failure'"
