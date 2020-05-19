@@ -40,7 +40,25 @@ jobs:
         run: |
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
           hub pull-request -p --no-edit --labels versions
-          bin/hub pr list  # list pull requests in the current repo
+          PR_NUMBER=$(hub pr show -f %I)
+          echo "::set-env name=PR_NUMBER::$PR_NUMBER"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: "steps.check-versions-file.outcome == 'failure'"
+
+      - name: Wait for PR checks
+        run: |
+          pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          hub ci-status #$PR_NUMBER
+          CI_STATUS=$?
+
+          while [ $CI_STATUS -gt 1 ]; do
+            sleep 5
+            hub ci-status #$PR_NUMBER
+            CI_STATUS=$?
+          done
+
+          exit $$CI_STATUS
+
+      - name: Merge PR
+        run: hub api -XPUT "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/merge"
