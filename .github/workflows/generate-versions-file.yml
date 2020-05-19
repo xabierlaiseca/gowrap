@@ -29,14 +29,18 @@ jobs:
 
       - name: Commit files
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "Generate Versions File Action"
+          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --local user.name "Generate Versions File - ${{ github.actor }}"
+          git checkout -b new-versions-$(date +%F)
           git add data/versions.json
           git commit -m "new versions file $(date +%F) [skip ci]"
         if: "steps.check-versions-file.outcome == 'failure'"
 
       - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
+          hub pull-request -p --no-edit --labels versions
+          bin/hub pr list  # list pull requests in the current repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: "steps.check-versions-file.outcome == 'failure'"
