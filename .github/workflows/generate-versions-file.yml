@@ -27,18 +27,15 @@ jobs:
         run: git diff-index --exit-code HEAD data/versions.json
         continue-on-error: true
 
-      - name: Commit files
+      - name: Publish changes
         run: |
+          set -eu
+
           git config --local user.email "${{ github.actor }}@users.noreply.github.com"
           git config --local user.name "Generate Versions File - ${{ github.actor }}"
           git checkout -b new-versions-$(date +%F)
           git add data/versions.json
           git commit -m "new versions file $(date +%F) [skip ci]"
-        if: "steps.check-versions-file.outcome == 'failure'"
-
-      - name: Publish changes
-        run: |
-          set -eu
 
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
           hub pull-request -p --no-edit --labels versions
