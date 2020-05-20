@@ -75,6 +75,28 @@ func Test_CLIs(t *testing.T) {
 				Args:   []string{"go", "version"},
 			},
 		},
+		"InstallVersionAndConfigureOlderDefault_OutsideProject": {
+			gowrapExecutions: [][]string{
+				{"install", "1.13.10"},
+				{"configure", "default", "1.12.8"},
+			},
+			wrapperCommand: []string{"go", "version"},
+			expectedSubCommand: genericcli.SubCommand{
+				Binary: filepath.Join("versions", "1.12.8", "bin", "go"),
+				Args:   []string{"go", "version"},
+			},
+		},
+		"IConfigureDefaultAndOverride_OutsideProject": {
+			gowrapExecutions: [][]string{
+				{"configure", "default", "1.13.10"},
+				{"configure", "default", "1.12.8"},
+			},
+			wrapperCommand: []string{"go", "version"},
+			expectedSubCommand: genericcli.SubCommand{
+				Binary: filepath.Join("versions", "1.12.8", "bin", "go"),
+				Args:   []string{"go", "version"},
+			},
+		},
 	}
 
 	for testName, testCase := range testCases {
@@ -88,8 +110,12 @@ func Test_CLIs(t *testing.T) {
 
 			testDir := filepath.Join(tmpDir, "test-dir")
 			require.NoError(t, os.MkdirAll(testDir, 0700))
-			wd, err := testCase.init(testDir)
-			require.NoError(t, err)
+
+			wd := testDir
+			if testCase.init != nil {
+				wd, err = testCase.init(testDir)
+				require.NoError(t, err)
+			}
 
 			for _, execution := range testCase.gowrapExecutions {
 				require.NoError(t, gowrapcmds.RunCli(gowrapHome, wd, execution))
