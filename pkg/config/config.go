@@ -17,10 +17,12 @@ type Configuration struct {
 }
 
 func Load(gowrapHome string) (*Configuration, error) {
+	cfg := &Configuration{
+		gowrapHome: gowrapHome,
+	}
 	configFilePath := getConfigFilePath(gowrapHome)
-
 	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
-		return &Configuration{}, nil
+		return cfg, nil
 	} else if err != nil {
 		return nil, err
 	}
@@ -36,13 +38,11 @@ func Load(gowrapHome string) (*Configuration, error) {
 		return nil, err
 	}
 
-	config := &Configuration{}
-	if err := json.Unmarshal(content, config); err != nil {
+	if err := json.Unmarshal(content, cfg); err != nil {
 		return nil, err
 	}
 
-	config.gowrapHome = gowrapHome
-	return config, nil
+	return cfg, nil
 }
 
 func (c *Configuration) Save() error {
