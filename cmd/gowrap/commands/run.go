@@ -8,7 +8,7 @@ func RunCli(gowrapHome, wd string, args []string) error {
 	newConfigureCommand(app, gowrapHome)
 	newInstallCommand(app, gowrapHome)
 	newListCommand(app, gowrapHome)
-	newProjectCommand(app, wd)
+	newProjectCommand(app, gowrapHome, wd)
 	newUninstallCommand(app, gowrapHome)
 	newVersionsFileCommand(app)
 
