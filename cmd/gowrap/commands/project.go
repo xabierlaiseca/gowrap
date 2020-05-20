@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/xabierlaiseca/gowrap/pkg/versions"
-
 	"github.com/alecthomas/kingpin"
 	"github.com/xabierlaiseca/gowrap/pkg/project"
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
@@ -48,23 +46,24 @@ func newProjectUnpinCommand(parent *kingpin.CmdClause, wd string) {
 func newProjectVersionCommand(parent *kingpin.CmdClause, gowrapHome, wd string) {
 	parent.Command("version", "Show the Go version used by the project").
 		Action(func(*kingpin.ParseContext) error {
-			projectVersion, err := project.DetectVersion(gowrapHome, wd)
+			detectedVersion, err := project.DetectVersion(gowrapHome, wd)
 			if err != nil {
 				return err
 			}
 
-			var additionalMessage string
-			installedVersion, err := versions.FindLatestInstalledForPrefix(gowrapHome, projectVersion)
+			var message string
 			switch {
-			case customerrors.IsNotFound(err):
-				additionalMessage = " (no compatible installed version found)"
-			case err != nil:
-				return err
-			case projectVersion != installedVersion:
-				additionalMessage = fmt.Sprintf(" (specific version to use: %s)", installedVersion)
+			case detectedVersion.InProject() && detectedVersion.IsAvailable():
+				message = fmt.Sprintf("%s (specific version to use: %s)", detectedVersion.Defined, detectedVersion.Installed)
+			case detectedVersion.InProject():
+				message = fmt.Sprintf("%s (no compatible installed version found)", detectedVersion.Defined)
+			case detectedVersion.IsAvailable():
+				message = fmt.Sprintf("%s (default version, not in Go project)", detectedVersion.Installed)
+			default:
+				message = "no versions installed found"
 			}
 
-			fmt.Printf("%s%s\n", projectVersion, additionalMessage)
+			fmt.Println(message)
 			return nil
 		})
 }
