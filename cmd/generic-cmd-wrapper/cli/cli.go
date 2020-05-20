@@ -40,19 +40,14 @@ type SubCommand struct {
 }
 
 func findVersionToUse(gowrapHome, wd string) (string, error) {
-	projectVersion, err := project.DetectVersion(gowrapHome, wd)
+	detectedVersion, err := project.DetectVersion(gowrapHome, wd)
 	if err != nil {
 		return "", err
+	} else if detectedVersion.IsAvailable() {
+		return detectedVersion.Installed, nil
 	}
 
-	installedVersion, err := versions.FindLatestInstalledForPrefix(gowrapHome, projectVersion)
-	if customerrors.IsNotFound(err) {
-		return installIfAccepted(gowrapHome, projectVersion)
-	} else if err != nil {
-		return "", err
-	}
-
-	return installedVersion, nil
+	return installIfAccepted(gowrapHome, detectedVersion.Defined)
 }
 
 func installIfAccepted(gowrapHome, version string) (string, error) {
