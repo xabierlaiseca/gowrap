@@ -11,14 +11,22 @@ const (
 	configFileName = "config.json"
 )
 
+const (
+	UpgradesAuto     string = "auto"
+	UpgradesAsk      string = "ask"
+	UpgradesDisabled string = "disabled"
+)
+
 type Configuration struct {
 	gowrapHome     string
 	DefaultVersion string `json:"defaultVersion,omitempty"`
+	Upgrades       string `json:"upgrades,omitempty"`
 }
 
 func Load(gowrapHome string) (*Configuration, error) {
 	cfg := &Configuration{
 		gowrapHome: gowrapHome,
+		Upgrades:   UpgradesDisabled,
 	}
 	configFilePath := getConfigFilePath(gowrapHome)
 	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {

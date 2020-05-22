@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/alecthomas/kingpin"
 	"github.com/xabierlaiseca/gowrap/pkg/project"
@@ -26,7 +25,7 @@ func newProjectPinCommand(parent *kingpin.CmdClause, wd string) {
 
 	cmd.
 		Validate(func(*kingpin.CmdClause) error {
-			if len(*version) == 0 || (semver.IsValid(*version) && strings.Count(*version, ".") == 2) {
+			if len(*version) == 0 || (semver.IsValid(*version) && semver.IsFullVersion(*version)) {
 				return nil
 			}
 			return customerrors.Errorf("invalid version provided: %s, 'a.b.c' like version required", *version)
@@ -53,12 +52,12 @@ func newProjectVersionCommand(parent *kingpin.CmdClause, gowrapHome, wd string) 
 
 			var message string
 			switch {
-			case detectedVersion.InProject() && detectedVersion.IsAvailable():
+			case detectedVersion.IsDefined() && detectedVersion.IsAvailable():
 				message = fmt.Sprintf("%s (specific version to use: %s)", detectedVersion.Defined, detectedVersion.Installed)
-			case detectedVersion.InProject():
+			case detectedVersion.IsDefined():
 				message = fmt.Sprintf("%s (no compatible installed version found)", detectedVersion.Defined)
 			case detectedVersion.IsAvailable():
-				message = fmt.Sprintf("%s (default version, not in Go project)", detectedVersion.Installed)
+				message = detectedVersion.Installed
 			default:
 				message = "no versions installed found"
 			}

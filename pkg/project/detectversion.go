@@ -22,7 +22,7 @@ func (pv *Version) IsAvailable() bool {
 	return len(pv.Installed) > 0
 }
 
-func (pv *Version) InProject() bool {
+func (pv *Version) IsDefined() bool {
 	return len(pv.Defined) > 0
 }
 
@@ -66,17 +66,17 @@ func detectVersionOutsideProject(gowrapHome string) (*Version, error) {
 		return nil, err
 	}
 
-	installedVersionToUse := strings.TrimSpace(configuration.DefaultVersion)
+	definedVersion := strings.TrimSpace(configuration.DefaultVersion)
 
-	if !semver.IsValid(installedVersionToUse) {
+	var installedVersionToUse string
+	if semver.IsValid(definedVersion) {
+		installedVersionToUse, err = versions.FindLatestInstalledForPrefix(gowrapHome, definedVersion)
+	} else {
 		installedVersionToUse, err = versions.FindLatestInstalled(gowrapHome)
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	return &Version{
-		Defined:   "",
+		Defined:   definedVersion,
 		Installed: installedVersionToUse,
-	}, nil
+	}, err
 }
