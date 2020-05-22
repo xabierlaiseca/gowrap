@@ -1,7 +1,6 @@
 package semver
 
 import (
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -16,14 +15,8 @@ func SliceStableComparatorFor(semvers []string) (func(int, int) bool, error) {
 	}
 
 	return func(i1, i2 int) bool {
-		return isOlder(semvers[i1], semvers[i2])
+		return IsLessThan(semvers[i1], semvers[i2])
 	}, nil
-}
-
-var validSemVerRegex = regexp.MustCompile(`^[0-9]+(\.[0-9]+){0,2}$`)
-
-func IsValid(semver string) bool {
-	return validSemVerRegex.MatchString(semver)
 }
 
 func Latest(versions []string) (string, error) {
@@ -33,7 +26,7 @@ func Latest(versions []string) (string, error) {
 
 	latest := versions[0]
 	for i := 1; i < len(versions); i++ {
-		if isOlder(latest, versions[i]) {
+		if IsLessThan(latest, versions[i]) {
 			latest = versions[i]
 		}
 	}
@@ -58,7 +51,7 @@ func HasPrefix(version, prefix string) bool {
 	return HasPrefix(restVersion, restPrefix)
 }
 
-func isOlder(semver1, semver2 string) bool {
+func IsLessThan(semver1, semver2 string) bool {
 	firstSegment1, rest1 := splitFirstSegment(semver1)
 	firstSegment2, rest2 := splitFirstSegment(semver2)
 
@@ -74,7 +67,7 @@ func isOlder(semver1, semver2 string) bool {
 	case len(rest2) == 0:
 		return false
 	default:
-		return isOlder(rest1, rest2)
+		return IsLessThan(rest1, rest2)
 	}
 }
 

@@ -7,16 +7,19 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/xabierlaiseca/gowrap/pkg/config"
+
 	"github.com/xabierlaiseca/gowrap/pkg/project"
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 	"github.com/xabierlaiseca/gowrap/pkg/versions"
-	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
 
 func GenerateSubCommand(gowrapHome, wd, wrappedCmd string, args []string) (*SubCommand, error) {
 	version, err := findVersionToUse(gowrapHome, wd)
-	if err != nil {
+	if customerrors.IsNotFound(err) {
+		return nil, customerrors.Errorf("No suitable version found")
+	} else if err != nil {
 		return nil, err
 	}
 
@@ -44,50 +47,78 @@ func findVersionToUse(gowrapHome, wd string) (string, error) {
 	if err != nil {
 		return "", err
 	} else if detectedVersion.IsAvailable() {
-		return detectedVersion.Installed, nil
+		return upgradeVersionIfConfigured(gowrapHome, detectedVersion)
 	}
 
-	return installIfAccepted(gowrapHome, detectedVersion.Defined)
+	candidate, err := versions.FindLatestAvailable(detectedVersion.Defined)
+	if err != nil {
+		return "", err
+	}
+
+	if accepted, err := installIfAccepted(gowrapHome, candidate, "No suitable version installed found"); err != nil {
+		return "", err
+	} else if !accepted {
+		return candidate, nil
+	}
+
+	return "", customerrors.Errorf("no versions available for go %s installed", detectedVersion.Defined)
 }
 
-func installIfAccepted(gowrapHome, version string) (string, error) {
-	matchingVersions := make([]string, 0)
-	availableVersions, err := versionsfile.Load()
+func upgradeVersionIfConfigured(gowrapHome string, version *project.Version) (string, error) {
+	if semver.IsFullVersion(version.Defined) {
+		return version.Installed, nil
+	}
+
+	c, err := config.Load(gowrapHome)
 	if err != nil {
 		return "", err
 	}
 
-	for availableVersion := range availableVersions {
-		if semver.HasPrefix(availableVersion, version) {
-			matchingVersions = append(matchingVersions, availableVersion)
-		}
+	if c.Upgrades == config.UpgradesDisabled {
+		return version.Installed, nil
 	}
 
-	if len(matchingVersions) == 0 {
-		return "", customerrors.Errorf("no versions available for go %s installed or available", version)
-	}
-
-	candidate, err := semver.Latest(matchingVersions)
+	candidate, err := versions.FindLatestAvailable(version.Defined)
 	if err != nil {
 		return "", err
 	}
 
-	reader := bufio.NewReader(os.Stdin)
-	accepted, err := askForInstallingVersion(reader, candidate)
-	if err != nil {
-		return "", err
+	if !semver.IsLessThan(version.Installed, candidate) {
+		return version.Installed, nil
 	}
 
-	if accepted {
+	if c.Upgrades == config.UpgradesAuto {
 		_, err := versions.InstallIfNotInstalled(gowrapHome, candidate)
 		return candidate, err
 	}
 
-	return "", customerrors.Errorf("no versions available for go %s installed", version)
+	accepted, err := installIfAccepted(gowrapHome, candidate, fmt.Sprintf("Upgrade found for version %s", version.Defined))
+	if err != nil {
+		return "", err
+	} else if accepted {
+		return candidate, nil
+	}
+
+	return version.Installed, nil
 }
 
-func askForInstallingVersion(reader *bufio.Reader, candidate string) (bool, error) {
-	fmt.Printf("No suitable version installed found, would you like to install %s? (Y/n): ", candidate)
+func installIfAccepted(gowrapHome, candidate, messagePrefix string) (bool, error) {
+	reader := bufio.NewReader(os.Stdin)
+	accepted, err := askForInstallingVersion(reader, candidate, messagePrefix)
+	if err != nil {
+		return false, err
+	}
+
+	if accepted {
+		_, err := versions.InstallIfNotInstalled(gowrapHome, candidate)
+		return true, err
+	}
+
+	return false, nil
+}
+
+func askForInstallingVersion(reader *bufio.Reader, candidate, messagePrefix string) (bool, error) {
+	fmt.Printf("%s, would you like to install %s? (Y/n): ", messagePrefix, candidate)
 	text, err := reader.ReadString('\n')
 	if err != nil {
 		return false, err
@@ -106,6 +137,6 @@ func askForInstallingVersion(reader *bufio.Reader, candidate string) (bool, erro
 		return false, nil
 	default:
 		fmt.Printf("Unexpected option provided: %s\n", text)
-		return askForInstallingVersion(reader, candidate)
+		return askForInstallingVersion(reader, candidate, messagePrefix)
 	}
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_isOlder(t *testing.T) {
+func Test_IsLessThan(t *testing.T) {
 	testCases := map[string]struct {
 		semver1  string
 		semver2  string
@@ -19,12 +19,12 @@ func Test_isOlder(t *testing.T) {
 			semver2:  "1.2.4",
 			expected: false,
 		},
-		"SameMayorAndMinorButOlderPatch": {
+		"SameMayorAndMinorButPatchLessThan": {
 			semver1:  "1.2.3",
 			semver2:  "1.2.4",
 			expected: true,
 		},
-		"SameMayorAndMinorButNewerPatch": {
+		"SameMayorAndMinorButPatchGreaterThan": {
 			semver1:  "1.2.5",
 			semver2:  "1.2.4",
 			expected: false,
@@ -44,12 +44,12 @@ func Test_isOlder(t *testing.T) {
 			semver2:  "1.2",
 			expected: false,
 		},
-		"SameMayorButOlderMinor": {
+		"SameMayorButMinorLessThan": {
 			semver1:  "1.1.7",
 			semver2:  "1.2.4",
 			expected: true,
 		},
-		"SameMayorButNewerMinor": {
+		"SameMayorButMinorGreaterThan": {
 			semver1:  "1.3.2",
 			semver2:  "1.2.4",
 			expected: false,
@@ -69,12 +69,12 @@ func Test_isOlder(t *testing.T) {
 			semver2:  "1",
 			expected: false,
 		},
-		"OlderMayor": {
+		"MayorLessThan": {
 			semver1:  "1.4.7",
 			semver2:  "2.2.4",
 			expected: true,
 		},
-		"NewerMayor": {
+		"MayorGreaterThan": {
 			semver1:  "2.1.2",
 			semver2:  "1.2.4",
 			expected: false,
@@ -98,70 +98,7 @@ func Test_isOlder(t *testing.T) {
 
 	for testName, testCase := range testCases {
 		t.Run(testName, func(t *testing.T) {
-			actual := isOlder(testCase.semver1, testCase.semver2)
-			assert.Equal(t, testCase.expected, actual)
-		})
-	}
-}
-
-func Test_IsValid(t *testing.T) {
-	testCases := map[string]struct {
-		semver   string
-		expected bool
-	}{
-		"Mayor": {
-			semver:   "1",
-			expected: true,
-		},
-		"MayorWithMultipleDigits": {
-			semver:   "21",
-			expected: true,
-		},
-		"MayorEndsWithDot": {
-			semver:   "1.",
-			expected: false,
-		},
-		"MayorWithInvalidChar": {
-			semver:   "2a",
-			expected: false,
-		},
-		"MayorAndMinor": {
-			semver:   "1.3",
-			expected: true,
-		},
-		"MayorAndMinorWithMultipleDigits": {
-			semver:   "1.34",
-			expected: true,
-		},
-		"MayorAndMinorEndsWithDot": {
-			semver:   "1.2.",
-			expected: false,
-		},
-		"MayorAndMinorWithInvalidChar": {
-			semver:   "2.2a",
-			expected: false,
-		},
-		"MayorAndMinorAndPatch": {
-			semver:   "1.1.3",
-			expected: true,
-		},
-		"MayorAndMinorAndPatchWithMultipleDigits": {
-			semver:   "1.1.34",
-			expected: true,
-		},
-		"MayorAndMinorAmdPatchEndsWithDot": {
-			semver:   "1.2.4.",
-			expected: false,
-		},
-		"MayorAndMinorAndPatchWithInvalidChar": {
-			semver:   "2.1.2a",
-			expected: false,
-		},
-	}
-
-	for testName, testCase := range testCases {
-		t.Run(testName, func(t *testing.T) {
-			actual := IsValid(testCase.semver)
+			actual := IsLessThan(testCase.semver1, testCase.semver2)
 			assert.Equal(t, testCase.expected, actual)
 		})
 	}

@@ -2,14 +2,15 @@ package commands
 
 import (
 	"github.com/alecthomas/kingpin"
+	"github.com/xabierlaiseca/gowrap/pkg/config"
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
-	"github.com/xabierlaiseca/gowrap/pkg/versions"
 )
 
 func newConfigureCommand(app *kingpin.Application, gowrapHome string) {
 	cmd := app.Command("configure", "configuration related operations")
 	newConfigureDefaultCommand(cmd, gowrapHome)
+	newConfigurationUpgradesCommand(cmd, gowrapHome)
 }
 
 func newConfigureDefaultCommand(parent *kingpin.CmdClause, gowrapHome string) {
@@ -28,6 +29,24 @@ func newConfigureDefaultCommand(parent *kingpin.CmdClause, gowrapHome string) {
 		})
 
 	cmd.Action(func(*kingpin.ParseContext) error {
-		return versions.SetDefaultVersion(gowrapHome, *version)
+		return config.SetDefaultVersion(gowrapHome, *version)
+	})
+}
+
+func newConfigurationUpgradesCommand(parent *kingpin.CmdClause, gowrapHome string) {
+	cmd := parent.Command("upgrades", "Configure the behaviour on how to upgrade go versions")
+	upgradesType := cmd.Arg("type", "how to upgrade go versions").
+		Required().
+		HintOptions(config.UpgradesAuto, config.UpgradesAsk, config.UpgradesDisabled).
+		String()
+
+	cmd.Action(func(*kingpin.ParseContext) error {
+		c, err := config.Load(gowrapHome)
+		if err != nil {
+			return err
+		}
+
+		c.Upgrades = *upgradesType
+		return c.Save()
 	})
 }

@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 
 	"github.com/mholt/archiver/v3"
-	"github.com/xabierlaiseca/gowrap/pkg/semver"
 	"github.com/xabierlaiseca/gowrap/pkg/util/console"
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
@@ -26,23 +25,7 @@ const downloadBufferSize = 64 * 1024
 // If no error, `true` will be returned if the version was installed or `false` if the version
 // was already available.
 func InstallLatestIfNotInstalled(gowrapHome, prefix string) (bool, error) {
-	availableVersions, err := versionsfile.Load()
-	if err != nil {
-		return false, err
-	}
-
-	var compatibleVersions []string
-	for availableVersion := range availableVersions {
-		if semver.HasPrefix(availableVersion, prefix) {
-			compatibleVersions = append(compatibleVersions, availableVersion)
-		}
-	}
-
-	if len(compatibleVersions) == 0 {
-		return false, customerrors.NotFound()
-	}
-
-	versionToInstall, err := semver.Latest(compatibleVersions)
+	versionToInstall, err := FindLatestAvailable(prefix)
 	if err != nil {
 		return false, err
 	}
