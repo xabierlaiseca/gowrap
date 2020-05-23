@@ -20,6 +20,12 @@ import (
 var goVersionCommand = []string{"go", "version"}
 
 func Test_CLIs(t *testing.T) {
+	downloadsDir, err := ioutil.TempDir(os.TempDir(), "gowrap-integration-downloads-")
+	require.NoError(t, err)
+	defer os.RemoveAll(downloadsDir)
+
+	require.NoError(t, os.Setenv("GOWRAP_DOWNLOADS_DIR", downloadsDir))
+
 	testCases := map[string]struct {
 		init             func(testDir string) (string, error)
 		gowrapExecutions [][]string
@@ -106,11 +112,11 @@ func Test_CLIs(t *testing.T) {
 		},
 		"InstallNotLatestVersionAndSetupAutoUpgradesButNoDefaultVersion_OutsideProject": {
 			gowrapExecutions: [][]string{
-				{"install", "1.13.2"},
+				{"install", "1.13.10"},
 				{"configure", "upgrades", "auto"},
 			},
 			wrapperCommand:   goVersionCommand,
-			assertSubCommand: assertVersionGreaterThan("1.13.2", goVersionCommand),
+			assertSubCommand: assertVersionGreaterThan("1.13.10", goVersionCommand),
 		},
 		"InstallNotLatestVersionAndUpgradesNotConfigured": {
 			init: initGoProject("1.14"),
