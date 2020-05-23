@@ -147,7 +147,7 @@ func Test_CLIs(t *testing.T) {
 			}
 
 			for _, execution := range testCase.gowrapExecutions {
-				require.NoError(t, gowrapcmds.RunCli(gowrapHome, wd, execution))
+				require.NoError(t, gowrapcmds.RunCli("0.0.1", gowrapHome, wd, execution))
 			}
 
 			actualSubCommand, err := genericcli.GenerateSubCommand(gowrapHome, wd, testCase.wrapperCommand[0], testCase.wrapperCommand[1:])

@@ -9,6 +9,8 @@ import (
 	"github.com/xabierlaiseca/gowrap/cmd/common"
 )
 
+var version = "0.0.0"
+
 func main() {
 	gowrapHome, err := common.GetGowrapHome()
 	exitOnError(err)
@@ -16,7 +18,7 @@ func main() {
 	wd, err := os.Getwd()
 	exitOnError(err)
 
-	exitOnError(commands.RunCli(gowrapHome, wd, os.Args[1:]))
+	exitOnError(commands.RunCli(version, gowrapHome, wd, os.Args[1:]))
 }
 
 func exitOnError(err error) {
