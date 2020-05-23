@@ -58,25 +58,29 @@ func InstallIfNotInstalled(gowrapHome, version string) (bool, error) {
 		return false, customerrors.Errorf("version %s is not available", version)
 	}
 
-	response, err := http.Get(archive.URL)
-	if err != nil {
-		return false, err
-	}
-	defer response.Body.Close()
-
-	downloadsDir, err := ioutil.TempDir(os.TempDir(), "gowrap-download-")
-	if err != nil {
-		return false, err
-	}
-
 	filename := path.Base(archive.URL)
-	dstPath := filepath.Join(downloadsDir, filename)
-
-	if err := storeDownload(response, dstPath, archive); err != nil {
-		return false, err
+	downloadsDir, downloadsDirSet := os.LookupEnv("GOWRAP_DOWNLOADS_DIR")
+	if !downloadsDirSet {
+		downloadsDir, err = ioutil.TempDir(os.TempDir(), "gowrap-download-")
+		if err != nil {
+			return false, err
+		}
 	}
 
-	if err := archiver.Unarchive(dstPath, downloadsDir); err != nil {
+	archivePath := filepath.Join(downloadsDir, filename)
+	if !downloadsDirSet || !exists(archivePath) {
+		response, err := http.Get(archive.URL)
+		if err != nil {
+			return false, err
+		}
+		defer response.Body.Close()
+
+		if err := storeDownload(response, archivePath, archive); err != nil {
+			return false, err
+		}
+	}
+
+	if err := archiver.Unarchive(archivePath, downloadsDir); err != nil {
 		return false, err
 	}
 
@@ -189,4 +193,9 @@ func isVersionInstalled(versionsDir, version string) (bool, error) {
 	}
 
 	return false, customerrors.Errorf("unexpected content in %s, it should be removed for proper functioning of this tool", versionDir)
+}
+
+func exists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
 }
