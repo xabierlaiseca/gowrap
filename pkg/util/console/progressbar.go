@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+const defaultProgressBarLength = 50
+
 type ProgressBar interface {
 	Increment(inc int64)
 	Done()
@@ -14,10 +16,12 @@ type Printer func(int64) string
 
 func NewProgressBar(max int64, printer Printer) ProgressBar {
 	cpb := consoleProgressBar{
-		maxValue:       max,
-		currentValue:   0,
-		valuePrinter:   printer,
-		maxValueString: printer(max),
+		maxValue:        max,
+		currentValue:    0,
+		maxProgress:     defaultProgressBarLength,
+		currentProgress: 0,
+		valuePrinter:    printer,
+		maxValueString:  printer(max),
 	}
 
 	fmt.Print(cpb.buildConsoleLine())
@@ -25,14 +29,14 @@ func NewProgressBar(max int64, printer Printer) ProgressBar {
 }
 
 type consoleProgressBar struct {
-	maxValue     int64
-	currentValue int64
-	valuePrinter Printer
+	maxValue        int64
+	currentValue    int64
+	maxProgress     int
+	currentProgress int
+	valuePrinter    Printer
 
 	maxValueString string
 }
-
-const progressBarLength = 50
 
 func (cpb *consoleProgressBar) Increment(inc int64) {
 	if cpb.currentValue+inc > cpb.maxValue {
@@ -41,8 +45,13 @@ func (cpb *consoleProgressBar) Increment(inc int64) {
 		cpb.currentValue += inc
 	}
 
-	line := cpb.buildConsoleLine()
-	fmt.Printf("\r\033[K%s", line)
+	previousProgress := cpb.currentProgress
+	cpb.currentProgress = int(int64(cpb.maxProgress) * cpb.currentValue / cpb.maxValue)
+
+	if cpb.currentProgress > previousProgress {
+		line := cpb.buildConsoleLine()
+		fmt.Printf("\r\033[K%s", line)
+	}
 }
 
 func (cpb *consoleProgressBar) Done() {
@@ -54,15 +63,14 @@ func (cpb *consoleProgressBar) Done() {
 }
 
 func (cpb *consoleProgressBar) buildConsoleLine() string {
-	equalSigns := int(progressBarLength * cpb.currentValue / cpb.maxValue)
 	greaterSigns := 1
-	if equalSigns == progressBarLength {
+	if cpb.currentProgress == cpb.maxProgress {
 		greaterSigns = 0
 	}
-	spaces := progressBarLength - equalSigns - greaterSigns
+	spaces := cpb.maxProgress - cpb.currentProgress - greaterSigns
 
 	return fmt.Sprintf("[%s%s%s] %s/%s",
-		strings.Repeat("=", equalSigns),
+		strings.Repeat("=", cpb.currentProgress),
 		strings.Repeat(">", greaterSigns),
 		strings.Repeat(" ", spaces),
 		cpb.valuePrinter(cpb.currentValue),
