@@ -11,6 +11,7 @@ func newConfigureCommand(app *kingpin.Application, gowrapHome string) {
 	cmd := app.Command("configure", "configuration related operations")
 	newConfigureDefaultCommand(cmd, gowrapHome)
 	newConfigurationUpgradesCommand(cmd, gowrapHome)
+	newConfigurationSelfUpgradesCommand(cmd, gowrapHome)
 }
 
 func newConfigureDefaultCommand(parent *kingpin.CmdClause, gowrapHome string) {
@@ -47,6 +48,24 @@ func newConfigurationUpgradesCommand(parent *kingpin.CmdClause, gowrapHome strin
 		}
 
 		c.Upgrades = *upgradesType
+		return c.Save()
+	})
+}
+
+func newConfigurationSelfUpgradesCommand(parent *kingpin.CmdClause, gowrapHome string) {
+	cmd := parent.Command("selfupgrades", "Configure the behaviour on how to upgrade gowrap versions")
+	selfUpgradesType := cmd.Arg("type", "how to upgrade gowrap versions").
+		Required().
+		HintOptions(config.SelfUpgradesEnabled, config.SelfUpgradesDisabled).
+		String()
+
+	cmd.Action(func(*kingpin.ParseContext) error {
+		c, err := config.Load(gowrapHome)
+		if err != nil {
+			return err
+		}
+
+		c.SelfUpgrades = *selfUpgradesType
 		return c.Save()
 	})
 }

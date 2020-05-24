@@ -15,12 +15,16 @@ const (
 	UpgradesAuto     string = "auto"
 	UpgradesAsk      string = "ask"
 	UpgradesDisabled string = "disabled"
+
+	SelfUpgradesEnabled  = "enabled"
+	SelfUpgradesDisabled = "disabled"
 )
 
 type Configuration struct {
 	gowrapHome     string
 	DefaultVersion string `json:"defaultVersion,omitempty"`
 	Upgrades       string `json:"upgrades,omitempty"`
+	SelfUpgrades   string `json:"selfUpgrades,omitempty"`
 }
 
 func Load(gowrapHome string) (*Configuration, error) {
