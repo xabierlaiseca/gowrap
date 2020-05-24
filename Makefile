@@ -20,7 +20,7 @@ gowrap-cmd: build-init
 
 cmd-wrappers: build-init
 	for cmd in $(WRAPPED_COMMANDS); do \
-		go build -ldflags="-X 'main.wrappedCmd=$$cmd'" -o $(BIN_DIR)/$$cmd cmd/generic-cmd-wrapper/main.go; \
+		go build -ldflags="-X 'main.wrappedCmd=$$cmd' -X main.version=$(VERSION)" -o $(BIN_DIR)/$$cmd cmd/generic-cmd-wrapper/main.go; \
 	done
 
 bin: gowrap-cmd cmd-wrappers

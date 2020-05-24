@@ -4,10 +4,12 @@ import (
 	"fmt"
 
 	"github.com/alecthomas/kingpin"
+	"github.com/xabierlaiseca/gowrap/cmd/common"
 )
 
 func RunCli(gowrapVersion, gowrapHome, wd string, args []string) error {
-	app := kingpin.New("gowrap", "Utility to manage installed go versions")
+	app := kingpin.New("gowrap", "Utility to manage installed go versions").
+		Action(selfUpgradeAction(gowrapVersion, gowrapHome))
 
 	newConfigureCommand(app, gowrapHome)
 	newInstallCommand(app, gowrapHome)
@@ -24,4 +26,15 @@ func RunCli(gowrapVersion, gowrapHome, wd string, args []string) error {
 
 	_, err := app.Parse(args)
 	return err
+}
+
+func selfUpgradeAction(currentVersion, gowrapHome string) func(context *kingpin.ParseContext) error {
+	return func(context *kingpin.ParseContext) error {
+		if context.String() == "configure selfupgrades" {
+			return nil
+		}
+
+		common.SelfUpgrade(gowrapHome, currentVersion)
+		return nil
+	}
 }

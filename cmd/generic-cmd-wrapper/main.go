@@ -9,11 +9,16 @@ import (
 	"github.com/xabierlaiseca/gowrap/cmd/generic-cmd-wrapper/cli"
 )
 
-var wrappedCmd = "<not-set>"
+var (
+	version    = "0.0.0"
+	wrappedCmd = "<not-set>"
+)
 
 func main() {
 	gowrapHome, err := common.GetGowrapHome()
 	exitOnError(err)
+
+	common.SelfUpgrade(gowrapHome, version)
 
 	wd, err := os.Getwd()
 	exitOnError(err)

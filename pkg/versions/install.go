@@ -1,25 +1,18 @@
 package versions
 
 import (
-	"crypto/sha1"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
-	"hash"
-	"io"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 
+	"github.com/xabierlaiseca/gowrap/pkg/util/file"
+
 	"github.com/mholt/archiver/v3"
-	"github.com/xabierlaiseca/gowrap/pkg/util/console"
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
-
-const downloadBufferSize = 64 * 1024
 
 // InstallLatestIfNotInstalled installs latest version for given prefix if not already installed.
 // If no error, `true` will be returned if the version was installed or `false` if the version
@@ -61,26 +54,22 @@ func InstallIfNotInstalled(gowrapHome, version string) (bool, error) {
 	filename := path.Base(archive.URL)
 	downloadsDir, downloadsDirSet := os.LookupEnv("GOWRAP_DOWNLOADS_DIR")
 	if !downloadsDirSet {
-		downloadsDir, err = ioutil.TempDir(os.TempDir(), "gowrap-download-")
+		downloadsDir, err = ioutil.TempDir(os.TempDir(), "go-download-")
 		if err != nil {
+			return false, err
+		}
+
+		defer os.RemoveAll(downloadsDir)
+	}
+
+	archiveDst := filepath.Join(downloadsDir, filename)
+	if !downloadsDirSet || !exists(archiveDst) {
+		if err := file.DownloadTo("go", archiveDst, archive.URL, archive.Checksum, archive.ChecksumAlgorithm); err != nil {
 			return false, err
 		}
 	}
 
-	archivePath := filepath.Join(downloadsDir, filename)
-	if !downloadsDirSet || !exists(archivePath) {
-		response, err := http.Get(archive.URL)
-		if err != nil {
-			return false, err
-		}
-		defer response.Body.Close()
-
-		if err := storeDownload(response, archivePath, archive); err != nil {
-			return false, err
-		}
-	}
-
-	if err := archiver.Unarchive(archivePath, downloadsDir); err != nil {
+	if err := archiver.Unarchive(archiveDst, downloadsDir); err != nil {
 		return false, err
 	}
 
@@ -108,70 +97,6 @@ func Uninstall(gowrapHome, version string) error {
 	}
 
 	return os.RemoveAll(versionDir)
-}
-
-func storeDownload(response *http.Response, dstPath string, archive versionsfile.GoArchive) error {
-	var hasher hash.Hash
-	switch {
-	case archive.IsSHA256Checksum():
-		hasher = sha256.New()
-	case archive.IsSHA1Checksum():
-		sha1.New()
-	default:
-		return customerrors.Errorf("unsupported checksum algorithm: %s", archive.ChecksumAlgorithm)
-	}
-
-	dst, err := os.Create(dstPath)
-	if err != nil {
-		return err
-	}
-	defer dst.Close()
-
-	fmt.Printf("Downloading go from %s...\n", archive.URL)
-	progressBar := console.NewProgressBar(response.ContentLength, sizeToMBString)
-
-	bytes := make([]byte, downloadBufferSize)
-	finished := false
-
-	for !finished {
-		readCount, err := response.Body.Read(bytes)
-
-		if err == io.EOF {
-			finished = true
-		} else if err != nil {
-			return err
-		}
-
-		writeCount, err := dst.Write(bytes[:readCount])
-		if err != nil {
-			return err
-		}
-
-		if _, err = hasher.Write(bytes[:readCount]); err != nil {
-			return err
-		}
-
-		progressBar.Increment(int64(writeCount))
-
-		if writeCount != readCount {
-			return customerrors.Errorf("failed to write file to disk")
-		}
-	}
-
-	progressBar.Done()
-
-	checksum := hex.EncodeToString(hasher.Sum(nil))
-	if checksum != archive.Checksum {
-		return customerrors.Error("failed to download file, checksums don't match")
-	}
-
-	return nil
-}
-
-const oneMB = 1024 * 1024
-
-func sizeToMBString(size int64) string {
-	return fmt.Sprintf("%dMB", size/oneMB)
 }
 
 func isVersionInstalled(versionsDir, version string) (bool, error) {

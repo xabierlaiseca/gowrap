@@ -31,7 +31,8 @@ builds:
     ldflags:
       - "-s"
       - "-w"
-      - "-X 'main.wrappedCmd=go'"
+      - "-X main.wrappedCmd=go"
+      - "-X main.version={{ .Version }}"
   - id: gofmt
     main: cmd/generic-cmd-wrapper/main.go
     binary: gofmt
@@ -44,7 +45,8 @@ builds:
     ldflags:
       - "-s"
       - "-w"
-      - "-X 'main.wrappedCmd=gofmt'"
+      - "-X main.wrappedCmd=gofmt"
+      - "-X main.version={{ .Version }}"
 
 checksum:
   name_template: 'checksums.txt'
