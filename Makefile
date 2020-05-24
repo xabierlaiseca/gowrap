@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := ci
 WRAPPED_COMMANDS := go gofmt
+VERSION ?= $(shell git describe --tags --dirty | sed 's/^.//')
 
 BIN_DIR := ./bin
 
@@ -15,7 +16,7 @@ build-init:
 	mkdir -p $(BIN_DIR)
 
 gowrap-cmd: build-init
-	go build -ldflags="-X main.version=$$(git describe --tags --dirty)" -o $(BIN_DIR)/gowrap cmd/gowrap/main.go
+	go build -ldflags="-X main.version=$(VERSION)" -o $(BIN_DIR)/gowrap cmd/gowrap/main.go
 
 cmd-wrappers: build-init
 	for cmd in $(WRAPPED_COMMANDS); do \
