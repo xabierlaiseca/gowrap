@@ -30,7 +30,11 @@ issues:
       linters:
         - gochecknoglobals
     - text: "weak cryptographic primitive"
-      path: pkg/versions/install.go
+      path: pkg/util/file/download.go
+      linters:
+        - gosec
+    - text: Potential HTTP request made with variable url
+      path: pkg/util/file/download.go
       linters:
         - gosec
     - text: "`wrappedCmd` is a global variable"

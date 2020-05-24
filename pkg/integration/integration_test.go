@@ -4,6 +4,7 @@ package integration
 
 import (
 	"fmt"
+	"github.com/xabierlaiseca/gowrap/pkg/config"
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
 	"io/ioutil"
 	"os"
@@ -146,6 +147,7 @@ func Test_CLIs(t *testing.T) {
 				require.NoError(t, err)
 			}
 
+			require.NoError(t, gowrapcmds.RunCli("0.0.1", gowrapHome, wd, []string{"configure", "selfupgrades", config.SelfUpgradesDisabled}))
 			for _, execution := range testCase.gowrapExecutions {
 				require.NoError(t, gowrapcmds.RunCli("0.0.1", gowrapHome, wd, execution))
 			}

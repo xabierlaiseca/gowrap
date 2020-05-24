@@ -29,8 +29,9 @@ type Configuration struct {
 
 func Load(gowrapHome string) (*Configuration, error) {
 	cfg := &Configuration{
-		gowrapHome: gowrapHome,
-		Upgrades:   UpgradesDisabled,
+		gowrapHome:   gowrapHome,
+		Upgrades:     UpgradesDisabled,
+		SelfUpgrades: SelfUpgradesEnabled,
 	}
 	configFilePath := getConfigFilePath(gowrapHome)
 	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
