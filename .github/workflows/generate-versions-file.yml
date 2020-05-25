@@ -27,7 +27,9 @@ jobs:
           git push origin master
 
       - name: Generate versions file
-        run: make generate-versions-file
+        run: |
+          make generate-versions-file
+          git diff 
 
       - id: check-versions-file
         name: Check if changes in versions file
