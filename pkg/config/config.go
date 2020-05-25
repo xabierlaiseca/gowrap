@@ -31,7 +31,7 @@ func Load(gowrapHome string) (*Configuration, error) {
 	cfg := &Configuration{
 		gowrapHome:   gowrapHome,
 		Upgrades:     UpgradesDisabled,
-		SelfUpgrades: SelfUpgradesEnabled,
+		SelfUpgrades: SelfUpgradesDisabled,
 	}
 	configFilePath := getConfigFilePath(gowrapHome)
 	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
