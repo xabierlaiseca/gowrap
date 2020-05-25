@@ -10,13 +10,11 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
-	"github.com/xabierlaiseca/gowrap/pkg/util/console"
+	"github.com/k0kubun/go-ansi"
+	"github.com/schollz/progressbar/v3"
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
-)
-
-const (
-	downloadBufferSize = 64 * 1024
 )
 
 func DownloadTo(packageName, dst, url, checksum, algorithm string) error {
@@ -50,37 +48,15 @@ func storeDownload(response *http.Response, dstPath, expectedChecksum string, ha
 	}
 	defer dst.Close()
 
-	progressBar := console.NewProgressBar(response.ContentLength, sizeToMBString)
-
-	bytes := make([]byte, downloadBufferSize)
-	finished := false
-
-	for !finished {
-		readCount, err := response.Body.Read(bytes)
-
-		if err == io.EOF {
-			finished = true
-		} else if err != nil {
-			return err
-		}
-
-		writeCount, err := dst.Write(bytes[:readCount])
-		if err != nil {
-			return err
-		}
-
-		if _, err = hasher.Write(bytes[:readCount]); err != nil {
-			return err
-		}
-
-		progressBar.Increment(int64(writeCount))
-
-		if writeCount != readCount {
-			return customerrors.Errorf("failed to write file to disk")
-		}
+	progressBar, err := newProgressBar(response.ContentLength)
+	if err != nil {
+		return err
 	}
 
-	progressBar.Done()
+	_, err = io.Copy(io.MultiWriter(dst, hasher, progressBar), response.Body)
+	if err != nil {
+		return err
+	}
 
 	checksum := hex.EncodeToString(hasher.Sum(nil))
 	if checksum != expectedChecksum {
@@ -90,10 +66,31 @@ func storeDownload(response *http.Response, dstPath, expectedChecksum string, ha
 	return nil
 }
 
-const oneMB = 1024 * 1024
+const progressBarRefreshThrottle = 65 * time.Millisecond
 
-func sizeToMBString(size int64) string {
-	return fmt.Sprintf("%dMB", size/oneMB)
+func newProgressBar(max int64) (*progressbar.ProgressBar, error) {
+	stdout := ansi.NewAnsiStdout()
+	bar := progressbar.NewOptions64(
+		max,
+		progressbar.OptionSetWriter(stdout),
+		progressbar.OptionShowBytes(true),
+		progressbar.OptionThrottle(progressBarRefreshThrottle),
+		progressbar.OptionShowCount(),
+		progressbar.OptionOnCompletion(func() {
+			fmt.Fprint(stdout, "\n")
+		}),
+		progressbar.OptionFullWidth(),
+		progressbar.OptionSetPredictTime(false),
+		progressbar.OptionSetTheme(progressbar.Theme{
+			Saucer:        "=",
+			SaucerHead:    ">",
+			SaucerPadding: " ",
+			BarStart:      "[",
+			BarEnd:        "]",
+		}),
+	)
+
+	return bar, bar.RenderBlank()
 }
 
 type noopHasher struct{}
