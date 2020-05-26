@@ -112,7 +112,12 @@ func upgrade(release *github.RepositoryRelease) error {
 		return err
 	}
 
-	binariesDir := filepath.Dir(os.Args[0])
+	executable, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	binariesDir := filepath.Dir(executable)
 	backupsDir := filepath.Join(downloadsDir, "backups")
 	if err := os.MkdirAll(backupsDir, 0700); err != nil {
 		return err
