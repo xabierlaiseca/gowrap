@@ -30,7 +30,7 @@ func RunCli(gowrapVersion, gowrapHome, wd string, args []string) error {
 
 func selfUpgradeAction(currentVersion, gowrapHome string) func(context *kingpin.ParseContext) error {
 	return func(context *kingpin.ParseContext) error {
-		if context.String() == "configure selfupgrades" {
+		if context.String() == "configure selfupgrade" {
 			return nil
 		}
 

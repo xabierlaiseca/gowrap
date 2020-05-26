@@ -50,7 +50,7 @@ func DetectVersion(gowrapHome, path string) (*Version, error) {
 	}
 
 	installedVersion, err := versions.FindLatestInstalledForPrefix(gowrapHome, definedVersion)
-	if err != nil {
+	if err != nil && !customerrors.IsNotFound(err) {
 		return nil, err
 	}
 

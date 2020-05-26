@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"fmt"
+
 	"github.com/alecthomas/kingpin"
 	"github.com/xabierlaiseca/gowrap/pkg/config"
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
@@ -10,7 +12,7 @@ import (
 func newConfigureCommand(app *kingpin.Application, gowrapHome string) {
 	cmd := app.Command("configure", "configuration related operations")
 	newConfigureDefaultCommand(cmd, gowrapHome)
-	newConfigurationUpgradesCommand(cmd, gowrapHome)
+	newConfigurationAutoInstallCommand(cmd, gowrapHome)
 	newConfigurationSelfUpgradesCommand(cmd, gowrapHome)
 }
 
@@ -34,12 +36,17 @@ func newConfigureDefaultCommand(parent *kingpin.CmdClause, gowrapHome string) {
 	})
 }
 
-func newConfigurationUpgradesCommand(parent *kingpin.CmdClause, gowrapHome string) {
-	cmd := parent.Command("upgrades", "Configure the behaviour on how to upgrade go versions")
-	upgradesType := cmd.Arg("type", "how to upgrade go versions").
+func newConfigurationAutoInstallCommand(parent *kingpin.CmdClause, gowrapHome string) {
+	cmd := parent.Command("autoinstall", "Configure when gowrap tooling can automatically install go versions").
+		HelpLong(fmt.Sprintf(
+			"If autoinstall is set to '%s' the tool will automatically install latest available go version for the required version if not already installed, "+
+				"if set to '%s' it will automatically install a go version only when a valid version is missing, "+
+				"if set to '%s' it will never automatically install a go version", config.AutoInstallEnabled, config.AutoInstallMissing, config.AutoInstallDisabled))
+
+	autoInstallType := cmd.Arg("type", "how to upgrade go versions").
 		Required().
-		HintOptions(config.UpgradesAuto, config.UpgradesAsk, config.UpgradesDisabled).
-		String()
+		HintOptions(config.AutoInstallEnabled, config.AutoInstallMissing, config.AutoInstallDisabled).
+		Enum(config.AutoInstallEnabled, config.AutoInstallMissing, config.AutoInstallDisabled)
 
 	cmd.Action(func(*kingpin.ParseContext) error {
 		c, err := config.Load(gowrapHome)
@@ -47,17 +54,17 @@ func newConfigurationUpgradesCommand(parent *kingpin.CmdClause, gowrapHome strin
 			return err
 		}
 
-		c.Upgrades = *upgradesType
+		c.AutoInstall = *autoInstallType
 		return c.Save()
 	})
 }
 
 func newConfigurationSelfUpgradesCommand(parent *kingpin.CmdClause, gowrapHome string) {
-	cmd := parent.Command("selfupgrades", "Configure the behaviour on how to upgrade gowrap versions")
+	cmd := parent.Command("selfupgrade", "Configure the behaviour on how to upgrade gowrap versions")
 	selfUpgradesType := cmd.Arg("type", "how to upgrade gowrap versions").
 		Required().
 		HintOptions(config.SelfUpgradesEnabled, config.SelfUpgradesDisabled).
-		String()
+		Enum(config.SelfUpgradesEnabled, config.SelfUpgradesDisabled)
 
 	cmd.Action(func(*kingpin.ParseContext) error {
 		c, err := config.Load(gowrapHome)
@@ -65,7 +72,7 @@ func newConfigurationSelfUpgradesCommand(parent *kingpin.CmdClause, gowrapHome s
 			return err
 		}
 
-		c.SelfUpgrades = *selfUpgradesType
+		c.SelfUpgrade = *selfUpgradesType
 		return c.Save()
 	})
 }
