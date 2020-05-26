@@ -12,9 +12,9 @@ const (
 )
 
 const (
-	UpgradesAuto     string = "auto"
-	UpgradesAsk      string = "ask"
-	UpgradesDisabled string = "disabled"
+	AutoInstallEnabled  string = "enabled"
+	AutoInstallMissing  string = "missing"
+	AutoInstallDisabled string = "disabled"
 
 	SelfUpgradesEnabled  = "enabled"
 	SelfUpgradesDisabled = "disabled"
@@ -23,15 +23,15 @@ const (
 type Configuration struct {
 	gowrapHome     string
 	DefaultVersion string `json:"defaultVersion,omitempty"`
-	Upgrades       string `json:"upgrades,omitempty"`
-	SelfUpgrades   string `json:"selfUpgrades,omitempty"`
+	AutoInstall    string `json:"autoInstall,omitempty"`
+	SelfUpgrade    string `json:"selfUpgrade,omitempty"`
 }
 
 func Load(gowrapHome string) (*Configuration, error) {
 	cfg := &Configuration{
-		gowrapHome:   gowrapHome,
-		Upgrades:     UpgradesDisabled,
-		SelfUpgrades: SelfUpgradesDisabled,
+		gowrapHome:  gowrapHome,
+		AutoInstall: AutoInstallMissing,
+		SelfUpgrade: SelfUpgradesDisabled,
 	}
 	configFilePath := getConfigFilePath(gowrapHome)
 	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {

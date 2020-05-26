@@ -4,6 +4,7 @@ package integration
 
 import (
 	"fmt"
+	"github.com/xabierlaiseca/gowrap/pkg/config"
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
 	"io/ioutil"
 	"os"
@@ -74,49 +75,93 @@ func Test_CLIs(t *testing.T) {
 			wrapperCommand:   goVersionCommand,
 			assertSubCommand: assertExactVersion("1.12.8", goVersionCommand),
 		},
-		"InstallNotLatestVersionAndSetupAutoUpgrades_InProject": {
+		"InstallNotLatestVersionAndSetupAutoInstallEnabled_InProject": {
 			init: initGoProject("1.14"),
 			gowrapExecutions: [][]string{
 				{"install", "1.14.2"},
-				{"configure", "upgrades", "auto"},
+				{"configure", "autoinstall", config.AutoInstallEnabled},
 			},
 			wrapperCommand:   goVersionCommand,
 			assertSubCommand: assertVersionGreaterThan("1.14.2", goVersionCommand),
 		},
-		"InstallNotLatestVersionAndSetupDisabledUpgrades_InProject": {
+		"InstallNotLatestVersionAndSetupAutoInstallMissing_InProject": {
 			init: initGoProject("1.14"),
 			gowrapExecutions: [][]string{
 				{"install", "1.14.2"},
-				{"configure", "upgrades", "disabled"},
+				{"configure", "autoinstall", config.AutoInstallMissing},
 			},
 			wrapperCommand:   goVersionCommand,
 			assertSubCommand: assertExactVersion("1.14.2", goVersionCommand),
 		},
-		"InstallNotLatestVersionAndSetupAutoUpgrades_OutsideProject": {
-			gowrapExecutions: [][]string{
-				{"install", "1.13.10"},
-				{"configure", "default", "1.13"},
-				{"configure", "upgrades", "auto"},
-			},
-			wrapperCommand:   goVersionCommand,
-			assertSubCommand: assertVersionBetween("1.13.10", "1.14.0", goVersionCommand),
-		},
-		"InstallNotLatestVersionAndSetupDisabledUpgrades_OutsideProject": {
+		"InstallNotLatestVersionAndSetupAutoInstallDisabled_InProject": {
+			init: initGoProject("1.14"),
 			gowrapExecutions: [][]string{
 				{"install", "1.14.2"},
-				{"configure", "default", "1.14"},
-				{"configure", "upgrades", "disabled"},
+				{"configure", "autoinstall", config.AutoInstallDisabled},
 			},
 			wrapperCommand:   goVersionCommand,
 			assertSubCommand: assertExactVersion("1.14.2", goVersionCommand),
 		},
-		"InstallNotLatestVersionAndSetupAutoUpgradesButNoDefaultVersion_OutsideProject": {
+		"NoVersionInstalledAndSetupAutoInstallMissing_InProject": {
+			init: initGoProject("1.14"),
 			gowrapExecutions: [][]string{
-				{"install", "1.13.10"},
-				{"configure", "upgrades", "auto"},
+				{"configure", "autoinstall", config.AutoInstallMissing},
 			},
 			wrapperCommand:   goVersionCommand,
-			assertSubCommand: assertVersionGreaterThan("1.13.10", goVersionCommand),
+			assertSubCommand: assertVersionGreaterThan("1.14", goVersionCommand),
+		},
+		"InstallNotLatestVersionAndSetupAutoInstallEnabled_OutsideProject": {
+			gowrapExecutions: [][]string{
+				{"install", "1.14.2"},
+				{"configure", "autoinstall", config.AutoInstallEnabled},
+			},
+			wrapperCommand:   goVersionCommand,
+			assertSubCommand: assertVersionGreaterThan("1.14.2", goVersionCommand),
+		},
+		"InstallNotLatestVersionAndSetupAutoInstallMissing_OutsideProject": {
+			gowrapExecutions: [][]string{
+				{"install", "1.14.2"},
+				{"configure", "autoinstall", config.AutoInstallMissing},
+			},
+			wrapperCommand:   goVersionCommand,
+			assertSubCommand: assertExactVersion("1.14.2", goVersionCommand),
+		},
+		"InstallNotLatestVersionAndSetupAutoInstallDisabled_OutsideProject": {
+			gowrapExecutions: [][]string{
+				{"install", "1.14.2"},
+				{"configure", "autoinstall", config.AutoInstallDisabled},
+			},
+			wrapperCommand:   goVersionCommand,
+			assertSubCommand: assertExactVersion("1.14.2", goVersionCommand),
+		},
+		"NoVersionInstalledAndSetupAutoInstallMissing_OutsideProject": {
+			gowrapExecutions: [][]string{
+				{"configure", "autoinstall", config.AutoInstallMissing},
+			},
+			wrapperCommand:   goVersionCommand,
+			assertSubCommand: assertVersionGreaterThan("1.14", goVersionCommand),
+		},
+		"NoVersionInstalledWhenGoVersionFileAvailable": {
+			init: initGoProjectWithGoVersionFile("1.14", "1.14.1"),
+			gowrapExecutions: [][]string{},
+			wrapperCommand:   goVersionCommand,
+			assertSubCommand: assertExactVersion("1.14.1", goVersionCommand),
+		},
+		"InstallVersionLessThanVersionInGoVersionFile": {
+			init: initGoProjectWithGoVersionFile("1.14", "1.14.2"),
+			gowrapExecutions: [][]string{
+				{"install", "1.14.1"},
+			},
+			wrapperCommand:   goVersionCommand,
+			assertSubCommand: assertExactVersion("1.14.2", goVersionCommand),
+		},
+		"InstallVersionGreaterThanVersionInGoVersionFile": {
+			init: initGoProjectWithGoVersionFile("1.14", "1.14.1"),
+			gowrapExecutions: [][]string{
+				{"install", "1.14.2"},
+			},
+			wrapperCommand:   goVersionCommand,
+			assertSubCommand: assertExactVersion("1.14.1", goVersionCommand),
 		},
 		"InstallNotLatestVersionAndUpgradesNotConfigured": {
 			init: initGoProject("1.14"),
@@ -162,20 +207,42 @@ func Test_CLIs(t *testing.T) {
 }
 
 func createGoMod(dir, version string) error {
-	goModPath := filepath.Join(dir, "go.mod")
-	goModFile, err := os.OpenFile(goModPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	return createFile(dir, "go.mod", fmt.Sprintf("go %s", version))
+}
+
+func createGoVersionFile(dir, version string) error {
+	return createFile(dir, ".go-version", version)
+}
+
+func createFile(dir, name, content string) error {
+	p := filepath.Join(dir, name)
+	f, err := os.OpenFile(p, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return err
 	}
-	defer goModFile.Close()
+	defer f.Close()
 
-	_, err = goModFile.WriteString(fmt.Sprintf("go %s", version))
+	_, err = f.WriteString(content)
 	return err
 }
 
 func initGoProject(version string) func (testDir string) (string, error) {
 	return func(testDir string) (s string, e error) {
 		if err := createGoMod(testDir, version); err != nil {
+			return "", err
+		}
+
+		return testDir, nil
+	}
+}
+
+func initGoProjectWithGoVersionFile(modVersion, goVersionFileVersion string) func (testDir string) (string, error) {
+	return func(testDir string) (s string, e error) {
+		if err := createGoMod(testDir, modVersion); err != nil {
+			return "", err
+		}
+
+		if err := createGoVersionFile(testDir, goVersionFileVersion); err != nil {
 			return "", err
 		}
 

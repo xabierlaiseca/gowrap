@@ -51,7 +51,7 @@ func trySelfUpgrade(gowrapHome, currentVersion string) error {
 	}
 
 	c, err := config.Load(gowrapHome)
-	if err != nil || c.SelfUpgrades == config.SelfUpgradesDisabled {
+	if err != nil || c.SelfUpgrade == config.SelfUpgradesDisabled {
 		return nil
 	}
 
