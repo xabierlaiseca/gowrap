@@ -12,9 +12,9 @@ const (
 )
 
 const (
-	AutoInstallEnabled  string = "enabled"
-	AutoInstallMissing  string = "missing"
-	AutoInstallDisabled string = "disabled"
+	AutoInstallEnabled  = "enabled"
+	AutoInstallMissing  = "missing"
+	AutoInstallDisabled = "disabled"
 
 	SelfUpgradesEnabled  = "enabled"
 	SelfUpgradesDisabled = "disabled"
