@@ -11,6 +11,12 @@ func RunCli(gowrapVersion, gowrapHome, wd string, args []string) error {
 	app := kingpin.New("gowrap", "Utility to manage installed go versions").
 		Action(selfUpgradeAction(gowrapVersion, gowrapHome))
 
+	app.UsageTemplate("{{CustomUsage .App .Context.SelectedCommand}}")
+	app.UsageFuncs(map[string]interface{}{
+		"CustomUsage": usage,
+	})
+	app.HelpFlag.Help("Show context-sensitive help")
+
 	newConfigureCommand(app, gowrapHome)
 	newInstallCommand(app, gowrapHome)
 	newListCommand(app, gowrapHome)

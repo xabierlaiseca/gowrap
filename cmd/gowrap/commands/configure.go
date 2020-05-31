@@ -43,10 +43,8 @@ func newConfigurationAutoInstallCommand(parent *kingpin.CmdClause, gowrapHome st
 				"if set to '%s' it will automatically install a go version only when a valid version is missing, "+
 				"if set to '%s' it will never automatically install a go version", config.AutoInstallEnabled, config.AutoInstallMissing, config.AutoInstallDisabled))
 
-	autoInstallType := cmd.Arg("type", "how to upgrade go versions").
-		Required().
-		HintOptions(config.AutoInstallEnabled, config.AutoInstallMissing, config.AutoInstallDisabled).
-		Enum(config.AutoInstallEnabled, config.AutoInstallMissing, config.AutoInstallDisabled)
+	typeArg := cmd.Arg("type", "how to upgrade go versions").Required()
+	autoInstallType := asEnum(typeArg, config.AutoInstallEnabled, config.AutoInstallMissing, config.AutoInstallDisabled)
 
 	cmd.Action(func(*kingpin.ParseContext) error {
 		c, err := config.Load(gowrapHome)
@@ -61,10 +59,9 @@ func newConfigurationAutoInstallCommand(parent *kingpin.CmdClause, gowrapHome st
 
 func newConfigurationSelfUpgradesCommand(parent *kingpin.CmdClause, gowrapHome string) {
 	cmd := parent.Command("selfupgrade", "Configure the behaviour on how to upgrade gowrap versions")
-	selfUpgradesType := cmd.Arg("type", "how to upgrade gowrap versions").
-		Required().
-		HintOptions(config.SelfUpgradesEnabled, config.SelfUpgradesDisabled).
-		Enum(config.SelfUpgradesEnabled, config.SelfUpgradesDisabled)
+
+	typeArg := cmd.Arg("type", "how to upgrade gowrap versions").Required()
+	selfUpgradesType := asEnum(typeArg, config.SelfUpgradesEnabled, config.SelfUpgradesDisabled)
 
 	cmd.Action(func(*kingpin.ParseContext) error {
 		c, err := config.Load(gowrapHome)
