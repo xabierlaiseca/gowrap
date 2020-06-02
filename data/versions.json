@@ -3484,6 +3484,20 @@
       "arch": "amd64"
     },
     {
+      "url": "https://dl.google.com/go/go1.13.11.freebsd-386.tar.gz",
+      "checksum": "99e707170751b19ec70fa9ab1d13d78c9df9ac804e5ed50ed6e9387b45b9eb16",
+      "checksumAlgorithm": "SHA256",
+      "os": "freebsd",
+      "arch": "386"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.13.11.freebsd-amd64.tar.gz",
+      "checksum": "12a855728f26266dc8a1a77f524197ba16455315e879ae9dcab904391f679cdb",
+      "checksumAlgorithm": "SHA256",
+      "os": "freebsd",
+      "arch": "amd64"
+    },
+    {
       "url": "https://dl.google.com/go/go1.13.11.linux-386.tar.gz",
       "checksum": "c61ea511a4e82e9a7d31684d33c7b8bbb275e4110490f9a320c8026b76cac4ee",
       "checksumAlgorithm": "SHA256",
@@ -3512,6 +3526,20 @@
       "arch": "armv6l"
     },
     {
+      "url": "https://dl.google.com/go/go1.13.11.linux-ppc64le.tar.gz",
+      "checksum": "d9697e5bcf3a3ac0ba1ff299bb72ffd4957b9893a19a1e65adce683144d795e3",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "ppc64le"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.13.11.linux-s390x.tar.gz",
+      "checksum": "076f31fb29aa5129151aaf850593b16b4391157870a15a3f0199554a99db0b9b",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "s390x"
+    },
+    {
       "url": "https://dl.google.com/go/go1.13.11.windows-386.zip",
       "checksum": "d36e85f6a99a9955b5b348dc13378f2bf15eb32bbc691f0e582fc5c3a09d71ed",
       "checksumAlgorithm": "SHA256",
@@ -3524,31 +3552,82 @@
       "checksumAlgorithm": "SHA256",
       "os": "windows",
       "arch": "amd64"
+    }
+  ],
+  "1.13.12": [
+    {
+      "url": "https://dl.google.com/go/go1.13.12.darwin-amd64.tar.gz",
+      "checksum": "beaab00ed7c60594201b47a0228b058c2c23a93b9d7a45697591e10273970049",
+      "checksumAlgorithm": "SHA256",
+      "os": "darwin",
+      "arch": "amd64"
     },
     {
-      "url": "https://dl.google.com/go/go1.13.11.freebsd-386.tar.gz",
-      "checksum": "99e707170751b19ec70fa9ab1d13d78c9df9ac804e5ed50ed6e9387b45b9eb16",
+      "url": "https://dl.google.com/go/go1.13.12.linux-386.tar.gz",
+      "checksum": "625d9cdb25ba55e1afba9490c79c55767117fa272e067f81643d22268d51308a",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "386"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.13.12.linux-amd64.tar.gz",
+      "checksum": "9cacc6653563771b458c13056265aa0c21b8a23ca9408278484e4efde4160618",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "amd64"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.13.12.linux-arm64.tar.gz",
+      "checksum": "7a8b4e7841d978c95dae8ef53e19811ee2d5c595a1c5ec7afed74bb8f71588b8",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "arm64"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.13.12.linux-armv6l.tar.gz",
+      "checksum": "552db731a120d341a1756c6ce0b1029cb5f5c756c09de9f45273893268d19c23",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "armv6l"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.13.12.windows-386.zip",
+      "checksum": "8d45cae6d2138b6ad470cee8b78b4739a1d02cdd976a9c9861f067a102e9affe",
+      "checksumAlgorithm": "SHA256",
+      "os": "windows",
+      "arch": "386"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.13.12.windows-amd64.zip",
+      "checksum": "43c4b434f965efa9015c47a1f65858f62ab425fba9fa36a48ed40d1805dd0479",
+      "checksumAlgorithm": "SHA256",
+      "os": "windows",
+      "arch": "amd64"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.13.12.freebsd-386.tar.gz",
+      "checksum": "b67385a062206630b85a9efe0abcbd0afc399ff79182d06aae2a3677ccc9dbcb",
       "checksumAlgorithm": "SHA256",
       "os": "freebsd",
       "arch": "386"
     },
     {
-      "url": "https://dl.google.com/go/go1.13.11.freebsd-amd64.tar.gz",
-      "checksum": "12a855728f26266dc8a1a77f524197ba16455315e879ae9dcab904391f679cdb",
+      "url": "https://dl.google.com/go/go1.13.12.freebsd-amd64.tar.gz",
+      "checksum": "875e9e264aceb97275637366b05d27ed24afa05cf3af9b5b0a248c76ba73ba02",
       "checksumAlgorithm": "SHA256",
       "os": "freebsd",
       "arch": "amd64"
     },
     {
-      "url": "https://dl.google.com/go/go1.13.11.linux-ppc64le.tar.gz",
-      "checksum": "d9697e5bcf3a3ac0ba1ff299bb72ffd4957b9893a19a1e65adce683144d795e3",
+      "url": "https://dl.google.com/go/go1.13.12.linux-ppc64le.tar.gz",
+      "checksum": "97d762a62eae2e1f4d89ce09a89407a63e12c22d5c0fb952e409b323927cd38e",
       "checksumAlgorithm": "SHA256",
       "os": "linux",
       "arch": "ppc64le"
     },
     {
-      "url": "https://dl.google.com/go/go1.13.11.linux-s390x.tar.gz",
-      "checksum": "076f31fb29aa5129151aaf850593b16b4391157870a15a3f0199554a99db0b9b",
+      "url": "https://dl.google.com/go/go1.13.12.linux-s390x.tar.gz",
+      "checksum": "8dd2d50666176cbe5cab7557081acb0f380cef2240e18d05db7faffc03d8f356",
       "checksumAlgorithm": "SHA256",
       "os": "linux",
       "arch": "s390x"
@@ -4432,6 +4511,20 @@
       "arch": "amd64"
     },
     {
+      "url": "https://dl.google.com/go/go1.14.3.freebsd-386.tar.gz",
+      "checksum": "7c5adb1a481d899b782d633541affe17f0d5ebdd97e32bfc01f274603555e14d",
+      "checksumAlgorithm": "SHA256",
+      "os": "freebsd",
+      "arch": "386"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.14.3.freebsd-amd64.tar.gz",
+      "checksum": "86da72a7da23c10af39fcc191ab15ad42e77c13ea7bd41c7ea3460f1f502bbe6",
+      "checksumAlgorithm": "SHA256",
+      "os": "freebsd",
+      "arch": "amd64"
+    },
+    {
       "url": "https://dl.google.com/go/go1.14.3.linux-386.tar.gz",
       "checksum": "46f8c744788103e8aeceb12c7d71eb16a58fe43e7e4711055fa9ef4bae50bff7",
       "checksumAlgorithm": "SHA256",
@@ -4460,6 +4553,20 @@
       "arch": "armv6l"
     },
     {
+      "url": "https://dl.google.com/go/go1.14.3.linux-ppc64le.tar.gz",
+      "checksum": "329359e2b72839696e78b6c0a96fd939e28e7435d852f31107f68037dd5f7442",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "ppc64le"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.14.3.linux-s390x.tar.gz",
+      "checksum": "1aad312fc7fa85d663e8226237cc7519b2599b88a213098abc10de8e84d6cfab",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "s390x"
+    },
+    {
       "url": "https://dl.google.com/go/go1.14.3.windows-386.zip",
       "checksum": "b0007593f4e293980d968acc97162692e04cec12b07b5a4928dba64462574abd",
       "checksumAlgorithm": "SHA256",
@@ -4472,31 +4579,82 @@
       "checksumAlgorithm": "SHA256",
       "os": "windows",
       "arch": "amd64"
+    }
+  ],
+  "1.14.4": [
+    {
+      "url": "https://dl.google.com/go/go1.14.4.darwin-amd64.tar.gz",
+      "checksum": "3fa7ed8dc44fdd50c0bfe72676250cceca527d59950aef20af906a670cf88de2",
+      "checksumAlgorithm": "SHA256",
+      "os": "darwin",
+      "arch": "amd64"
     },
     {
-      "url": "https://dl.google.com/go/go1.14.3.freebsd-386.tar.gz",
-      "checksum": "7c5adb1a481d899b782d633541affe17f0d5ebdd97e32bfc01f274603555e14d",
+      "url": "https://dl.google.com/go/go1.14.4.linux-386.tar.gz",
+      "checksum": "4179f406ea0efd455a8071eaaaf1dea92cac5c17aab89fbad18ea2a37623c810",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "386"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.14.4.linux-amd64.tar.gz",
+      "checksum": "aed845e4185a0b2a3c3d5e1d0a35491702c55889192bb9c30e67a3de6849c067",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "amd64"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.14.4.linux-arm64.tar.gz",
+      "checksum": "05dc46ada4e23a1f58e72349f7c366aae2e9c7a7f1e7653095538bc5bba5e077",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "arm64"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.14.4.linux-armv6l.tar.gz",
+      "checksum": "e20211425b3f797ca6cd5e9a99ab6d5eaf1b009d08d19fc8a7835544fa58c703",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "armv6l"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.14.4.windows-386.zip",
+      "checksum": "555d7e9919ca58d5c64b2377ca09095eeba3a5d19766f2581ff02e9eb004f6fc",
+      "checksumAlgorithm": "SHA256",
+      "os": "windows",
+      "arch": "386"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.14.4.windows-amd64.zip",
+      "checksum": "e04f591219b18e7cabe73eb79c90405b5c7a5baee61377670d7a48429c5c978d",
+      "checksumAlgorithm": "SHA256",
+      "os": "windows",
+      "arch": "amd64"
+    },
+    {
+      "url": "https://dl.google.com/go/go1.14.4.freebsd-386.tar.gz",
+      "checksum": "3fa0ab73cddf4117010285a00df5c7c0b0c8617a3b8aa4e3876197e433986897",
       "checksumAlgorithm": "SHA256",
       "os": "freebsd",
       "arch": "386"
     },
     {
-      "url": "https://dl.google.com/go/go1.14.3.freebsd-amd64.tar.gz",
-      "checksum": "86da72a7da23c10af39fcc191ab15ad42e77c13ea7bd41c7ea3460f1f502bbe6",
+      "url": "https://dl.google.com/go/go1.14.4.freebsd-amd64.tar.gz",
+      "checksum": "73da292c1b5980f5e3d6506d6d9ef65a67533936f8e0cb775d726fe3a715e519",
       "checksumAlgorithm": "SHA256",
       "os": "freebsd",
       "arch": "amd64"
     },
     {
-      "url": "https://dl.google.com/go/go1.14.3.linux-ppc64le.tar.gz",
-      "checksum": "329359e2b72839696e78b6c0a96fd939e28e7435d852f31107f68037dd5f7442",
+      "url": "https://dl.google.com/go/go1.14.4.linux-ppc64le.tar.gz",
+      "checksum": "b335f85bc935ca3f553ad1bac37da311aaec887ffd8a48cb58a0abb0d8adf324",
       "checksumAlgorithm": "SHA256",
       "os": "linux",
       "arch": "ppc64le"
     },
     {
-      "url": "https://dl.google.com/go/go1.14.3.linux-s390x.tar.gz",
-      "checksum": "1aad312fc7fa85d663e8226237cc7519b2599b88a213098abc10de8e84d6cfab",
+      "url": "https://dl.google.com/go/go1.14.4.linux-s390x.tar.gz",
+      "checksum": "17f2ae0bae968b3d909daabc5cc4a37471ddb70ec49076b78702291e6772d71a",
       "checksumAlgorithm": "SHA256",
       "os": "linux",
       "arch": "s390x"
