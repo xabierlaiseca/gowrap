@@ -2,6 +2,7 @@ package versionsfile
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path"
@@ -86,7 +87,8 @@ func Generate(outputPath string) error {
 	return ioutil.WriteFile(outputPath, versionsBytes, 0600)
 }
 
-const downloadsPageURL = "https://golang.org/dl/"
+const golangWebsite = "https://golang.org"
+const downloadsPageURL = golangWebsite + "/dl/"
 
 func getDownloadsPage() (*goquery.Document, error) {
 	response, err := http.Get(downloadsPageURL)
@@ -143,6 +145,7 @@ func extractArchives(versionSelection *goquery.Selection) []platformGoArchive {
 
 func extractArchive(archiveRowSelection *goquery.Selection, checksumAlgorithm string) platformGoArchive {
 	link, _ := archiveRowSelection.Find(`td:first-child a`).First().Attr("href")
+	link = toAbsoluteArchiveLink(link)
 	filename := path.Base(link)
 	matches := archiveFileRegex.FindStringSubmatch(filename)
 
@@ -156,4 +159,16 @@ func extractArchive(archiveRowSelection *goquery.Selection, checksumAlgorithm st
 		ARCH: matches[2],
 		OS:   matches[1],
 	}
+}
+
+func toAbsoluteArchiveLink(link string) string {
+	if strings.HasPrefix(link, "http://") || strings.HasPrefix(link, "https://") {
+		return link
+	}
+
+	if strings.HasPrefix(link, "/") {
+		return fmt.Sprintf("%s%s", golangWebsite, link)
+	}
+
+	return fmt.Sprintf("%s%s", downloadsPageURL, link)
 }
