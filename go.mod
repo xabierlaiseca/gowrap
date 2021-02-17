@@ -14,7 +14,7 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mholt/archiver/v3 v3.5.0
 	github.com/schollz/progressbar/v3 v3.3.4
-	github.com/sirupsen/logrus v1.7.0
+	github.com/sirupsen/logrus v1.8.0
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/mod v0.4.1
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
