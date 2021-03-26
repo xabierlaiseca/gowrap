@@ -8,7 +8,7 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/google/go-github v17.0.0+incompatible
-	github.com/google/go-github/v32 v32.1.0
+	github.com/google/go-github/v34 v34.0.0
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
 	github.com/kr/pretty v0.1.0 // indirect
