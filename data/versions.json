@@ -5933,6 +5933,20 @@
       "arch": "amd64"
     },
     {
+      "url": "https://golang.org/dl/go1.15.10.freebsd-386.tar.gz",
+      "checksum": "3b86b71075e258f0f09ea025317fe78ed0e49d9da59acb5e29e67eaea835166e",
+      "checksumAlgorithm": "SHA256",
+      "os": "freebsd",
+      "arch": "386"
+    },
+    {
+      "url": "https://golang.org/dl/go1.15.10.freebsd-amd64.tar.gz",
+      "checksum": "eab5abfc8a1794d921b39da6e61a7638a7aaab401a645231f38238c7eaadc8b1",
+      "checksumAlgorithm": "SHA256",
+      "os": "freebsd",
+      "arch": "amd64"
+    },
+    {
       "url": "https://golang.org/dl/go1.15.10.linux-386.tar.gz",
       "checksum": "69a29473c9e8eded5b5885a45773e4f1b9661383ce577199c4c70efe4c67bc59",
       "checksumAlgorithm": "SHA256",
@@ -5961,6 +5975,20 @@
       "arch": "armv6l"
     },
     {
+      "url": "https://golang.org/dl/go1.15.10.linux-ppc64le.tar.gz",
+      "checksum": "49128af704c37a356b1d14d814e4cf64218a8c6cabb22249e0c0068b35f710d3",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "ppc64le"
+    },
+    {
+      "url": "https://golang.org/dl/go1.15.10.linux-s390x.tar.gz",
+      "checksum": "230e0e50fe0df0ba380804c02f1d88a801c6dee38582c4a9502e79dc744c7bb0",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "s390x"
+    },
+    {
       "url": "https://golang.org/dl/go1.15.10.windows-386.zip",
       "checksum": "b76f65ac809775d13d06f5c7d9daba8a8855cda3cac51297e925c4dbfa965070",
       "checksumAlgorithm": "SHA256",
@@ -5973,31 +6001,82 @@
       "checksumAlgorithm": "SHA256",
       "os": "windows",
       "arch": "amd64"
+    }
+  ],
+  "1.15.11": [
+    {
+      "url": "https://golang.org/dl/go1.15.11.darwin-amd64.tar.gz",
+      "checksum": "651c78408b2c047b7ccccb6b244c5de9eab927c87594ff6bd9540d43c9706671",
+      "checksumAlgorithm": "SHA256",
+      "os": "darwin",
+      "arch": "amd64"
     },
     {
-      "url": "https://golang.org/dl/go1.15.10.freebsd-386.tar.gz",
-      "checksum": "3b86b71075e258f0f09ea025317fe78ed0e49d9da59acb5e29e67eaea835166e",
+      "url": "https://golang.org/dl/go1.15.11.linux-386.tar.gz",
+      "checksum": "2de51fc6873d8b688d7451cfc87443ef49404af98bbab9c8a36fb6c4bc95e4de",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "386"
+    },
+    {
+      "url": "https://golang.org/dl/go1.15.11.linux-amd64.tar.gz",
+      "checksum": "8825b72d74b14e82b54ba3697813772eb94add3abf70f021b6bdebe193ed01ec",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "amd64"
+    },
+    {
+      "url": "https://golang.org/dl/go1.15.11.linux-arm64.tar.gz",
+      "checksum": "bfc8f07945296e97c6d28c7999d86b5cab51c7a87eb2b22ca6781c41a6bb6f2d",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "arm64"
+    },
+    {
+      "url": "https://golang.org/dl/go1.15.11.linux-armv6l.tar.gz",
+      "checksum": "dba11ed018fc7b5774ca996c4bdb847f8f9535cdc4932eb09a43c390813af4c9",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "armv6l"
+    },
+    {
+      "url": "https://golang.org/dl/go1.15.11.windows-386.zip",
+      "checksum": "b0a64a2a2dedefd1559acf866e393c8e00294dbde113875ee9d8cf3561886123",
+      "checksumAlgorithm": "SHA256",
+      "os": "windows",
+      "arch": "386"
+    },
+    {
+      "url": "https://golang.org/dl/go1.15.11.windows-amd64.zip",
+      "checksum": "56f63de17cd739287de6d9f3cfdad3b781ad3e4a18aae20ece994ee97c1819fd",
+      "checksumAlgorithm": "SHA256",
+      "os": "windows",
+      "arch": "amd64"
+    },
+    {
+      "url": "https://golang.org/dl/go1.15.11.freebsd-386.tar.gz",
+      "checksum": "c9ac9e8e12b9a4639d8a164815d2ccab86f7c1534672c1d03933e7180d2ace5d",
       "checksumAlgorithm": "SHA256",
       "os": "freebsd",
       "arch": "386"
     },
     {
-      "url": "https://golang.org/dl/go1.15.10.freebsd-amd64.tar.gz",
-      "checksum": "eab5abfc8a1794d921b39da6e61a7638a7aaab401a645231f38238c7eaadc8b1",
+      "url": "https://golang.org/dl/go1.15.11.freebsd-amd64.tar.gz",
+      "checksum": "38fb5516e86934dc385d1b06433692034f38ed38117e8017e211a0efe55ed44e",
       "checksumAlgorithm": "SHA256",
       "os": "freebsd",
       "arch": "amd64"
     },
     {
-      "url": "https://golang.org/dl/go1.15.10.linux-ppc64le.tar.gz",
-      "checksum": "49128af704c37a356b1d14d814e4cf64218a8c6cabb22249e0c0068b35f710d3",
+      "url": "https://golang.org/dl/go1.15.11.linux-ppc64le.tar.gz",
+      "checksum": "4916ef0fc4c40db2dcc503a3473b325ed21d100cc77f1cc7e0a3aede19eec628",
       "checksumAlgorithm": "SHA256",
       "os": "linux",
       "arch": "ppc64le"
     },
     {
-      "url": "https://golang.org/dl/go1.15.10.linux-s390x.tar.gz",
-      "checksum": "230e0e50fe0df0ba380804c02f1d88a801c6dee38582c4a9502e79dc744c7bb0",
+      "url": "https://golang.org/dl/go1.15.11.linux-s390x.tar.gz",
+      "checksum": "2fb25504fa525e24dbba7e8e7fa2d91c42c66272dc176d5270dec77099124c75",
       "checksumAlgorithm": "SHA256",
       "os": "linux",
       "arch": "s390x"
@@ -6823,6 +6902,20 @@
       "arch": "arm64"
     },
     {
+      "url": "https://golang.org/dl/go1.16.2.freebsd-386.tar.gz",
+      "checksum": "09cd0eae0a3e8766984e775cf76c9a902bbf8347c1fa21c45be019690cedef82",
+      "checksumAlgorithm": "SHA256",
+      "os": "freebsd",
+      "arch": "386"
+    },
+    {
+      "url": "https://golang.org/dl/go1.16.2.freebsd-amd64.tar.gz",
+      "checksum": "b0b0a5dc9e69b0f7da7cb0e0123efef9e6f344161574f21c7a401d3df37d2dd6",
+      "checksumAlgorithm": "SHA256",
+      "os": "freebsd",
+      "arch": "amd64"
+    },
+    {
       "url": "https://golang.org/dl/go1.16.2.linux-386.tar.gz",
       "checksum": "3638abf8e8272a4ddc3e5189487c932d680abfb151e2c48ae18c9a04a90ded73",
       "checksumAlgorithm": "SHA256",
@@ -6851,6 +6944,20 @@
       "arch": "armv6l"
     },
     {
+      "url": "https://golang.org/dl/go1.16.2.linux-ppc64le.tar.gz",
+      "checksum": "e1dcc9b460b2d522added8dfce764a06c5e455c8047b45b67a06f7f5ab19c4e0",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "ppc64le"
+    },
+    {
+      "url": "https://golang.org/dl/go1.16.2.linux-s390x.tar.gz",
+      "checksum": "a686743b0803d54e051756ce946d9d72436f23e9f815739c947934e0052bf9ff",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "s390x"
+    },
+    {
       "url": "https://golang.org/dl/go1.16.2.windows-386.zip",
       "checksum": "f8e96864d13eec9ece84e64ebf61d89753dc93359f040c5f1496baaf34542d73",
       "checksumAlgorithm": "SHA256",
@@ -6863,31 +6970,89 @@
       "checksumAlgorithm": "SHA256",
       "os": "windows",
       "arch": "amd64"
+    }
+  ],
+  "1.16.3": [
+    {
+      "url": "https://golang.org/dl/go1.16.3.darwin-amd64.tar.gz",
+      "checksum": "6bb1cf421f8abc2a9a4e39140b7397cdae6aca3e8d36dcff39a1a77f4f1170ac",
+      "checksumAlgorithm": "SHA256",
+      "os": "darwin",
+      "arch": "amd64"
     },
     {
-      "url": "https://golang.org/dl/go1.16.2.freebsd-386.tar.gz",
-      "checksum": "09cd0eae0a3e8766984e775cf76c9a902bbf8347c1fa21c45be019690cedef82",
+      "url": "https://golang.org/dl/go1.16.3.darwin-arm64.tar.gz",
+      "checksum": "f4e96bbcd5d2d1942f5b55d9e4ab19564da4fad192012f6d7b0b9b055ba4208f",
+      "checksumAlgorithm": "SHA256",
+      "os": "darwin",
+      "arch": "arm64"
+    },
+    {
+      "url": "https://golang.org/dl/go1.16.3.linux-386.tar.gz",
+      "checksum": "48b2d1481db756c88c18b1f064dbfc3e265ce4a775a23177ca17e25d13a24c5d",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "386"
+    },
+    {
+      "url": "https://golang.org/dl/go1.16.3.linux-amd64.tar.gz",
+      "checksum": "951a3c7c6ce4e56ad883f97d9db74d3d6d80d5fec77455c6ada6c1f7ac4776d2",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "amd64"
+    },
+    {
+      "url": "https://golang.org/dl/go1.16.3.linux-arm64.tar.gz",
+      "checksum": "566b1d6f17d2bc4ad5f81486f0df44f3088c3ed47a3bec4099d8ed9939e90d5d",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "arm64"
+    },
+    {
+      "url": "https://golang.org/dl/go1.16.3.linux-armv6l.tar.gz",
+      "checksum": "0dae30385e3564a557dac7f12a63eedc73543e6da0f6017990e214ce8cc8797c",
+      "checksumAlgorithm": "SHA256",
+      "os": "linux",
+      "arch": "armv6l"
+    },
+    {
+      "url": "https://golang.org/dl/go1.16.3.windows-386.zip",
+      "checksum": "a3c16e1531bf9726f47911c4a9ed7cb665a6207a51c44f10ebad4db63b4bcc5a",
+      "checksumAlgorithm": "SHA256",
+      "os": "windows",
+      "arch": "386"
+    },
+    {
+      "url": "https://golang.org/dl/go1.16.3.windows-amd64.zip",
+      "checksum": "a4400345135b36cb7942e52bbaf978b66814738b855eeff8de879a09fd99de7f",
+      "checksumAlgorithm": "SHA256",
+      "os": "windows",
+      "arch": "amd64"
+    },
+    {
+      "url": "https://golang.org/dl/go1.16.3.freebsd-386.tar.gz",
+      "checksum": "31ecd11d497684fa8b0f01ba784590c4c760943665fdc4fe0adaa1405c71736c",
       "checksumAlgorithm": "SHA256",
       "os": "freebsd",
       "arch": "386"
     },
     {
-      "url": "https://golang.org/dl/go1.16.2.freebsd-amd64.tar.gz",
-      "checksum": "b0b0a5dc9e69b0f7da7cb0e0123efef9e6f344161574f21c7a401d3df37d2dd6",
+      "url": "https://golang.org/dl/go1.16.3.freebsd-amd64.tar.gz",
+      "checksum": "ffbd920b309e62e807457b11d80e8c17fefe3ef6de423aaba4b1e270b2ca4c3d",
       "checksumAlgorithm": "SHA256",
       "os": "freebsd",
       "arch": "amd64"
     },
     {
-      "url": "https://golang.org/dl/go1.16.2.linux-ppc64le.tar.gz",
-      "checksum": "e1dcc9b460b2d522added8dfce764a06c5e455c8047b45b67a06f7f5ab19c4e0",
+      "url": "https://golang.org/dl/go1.16.3.linux-ppc64le.tar.gz",
+      "checksum": "5eb046bbbbc7fe2591846a4303884cb5a01abb903e3e61e33459affe7874e811",
       "checksumAlgorithm": "SHA256",
       "os": "linux",
       "arch": "ppc64le"
     },
     {
-      "url": "https://golang.org/dl/go1.16.2.linux-s390x.tar.gz",
-      "checksum": "a686743b0803d54e051756ce946d9d72436f23e9f815739c947934e0052bf9ff",
+      "url": "https://golang.org/dl/go1.16.3.linux-s390x.tar.gz",
+      "checksum": "3e8bd7bde533a73fd6fa75b5288678ef397e76c198cfb26b8ae086035383b1cf",
       "checksumAlgorithm": "SHA256",
       "os": "linux",
       "arch": "s390x"
