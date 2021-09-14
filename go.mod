@@ -12,7 +12,7 @@ require (
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mholt/archiver/v3 v3.5.0
-	github.com/schollz/progressbar/v3 v3.8.1
+	github.com/schollz/progressbar/v3 v3.8.3
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/mod v0.4.2
