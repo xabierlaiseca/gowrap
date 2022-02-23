@@ -1,6 +1,7 @@
 package versionsfile
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -8,9 +9,11 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
+	httputils "github.com/xabierlaiseca/gowrap/pkg/util/http"
 )
 
 type platformGoArchive struct {
@@ -43,7 +46,10 @@ func (rvf *remoteVersionsFile) getArchivesFor(arch, os string) map[string]platfo
 const versionsFileURL = "https://raw.githubusercontent.com/xabierlaiseca/gowrap/master/data/versions.json"
 
 func download() (*remoteVersionsFile, error) {
-	response, err := http.Get(versionsFileURL)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	response, err := httputils.Get(ctx, versionsFileURL)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +97,9 @@ const golangWebsite = "https://golang.org"
 const downloadsPageURL = golangWebsite + "/dl/"
 
 func getDownloadsPage() (*goquery.Document, error) {
-	response, err := http.Get(downloadsPageURL)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	response, err := httputils.Get(ctx, downloadsPageURL)
 	if err != nil {
 		return nil, err
 	}
