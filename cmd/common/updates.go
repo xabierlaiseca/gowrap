@@ -5,7 +5,6 @@ import (
 	"context"
 	"io"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -13,15 +12,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/go-github/github"
+	"github.com/mholt/archiver/v3"
 	"github.com/sirupsen/logrus"
 	"github.com/xabierlaiseca/gowrap/pkg/cache"
 	"github.com/xabierlaiseca/gowrap/pkg/config"
-
-	"github.com/google/go-github/github"
-	"github.com/mholt/archiver/v3"
 	"github.com/xabierlaiseca/gowrap/pkg/semver"
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 	"github.com/xabierlaiseca/gowrap/pkg/util/file"
+	httputils "github.com/xabierlaiseca/gowrap/pkg/util/http"
 )
 
 const (
@@ -51,7 +50,9 @@ func trySelfUpgrade(gowrapHome, currentVersion string) error {
 	}
 
 	c, err := config.Load(gowrapHome)
-	if err != nil || c.SelfUpgrade == config.SelfUpgradesDisabled {
+	if err != nil {
+		return err
+	} else if c.SelfUpgrade == config.SelfUpgradesDisabled {
 		return nil
 	}
 
@@ -74,11 +75,7 @@ func trySelfUpgrade(gowrapHome, currentVersion string) error {
 		return nil
 	}
 
-	if err := upgrade(release); err != nil {
-		return err
-	}
-
-	return nil
+	return upgrade(release)
 }
 
 func upgrade(release *github.RepositoryRelease) error {
@@ -93,17 +90,8 @@ func upgrade(release *github.RepositoryRelease) error {
 	}
 	defer os.RemoveAll(downloadsDir)
 
-	gowrapArchivePath := filepath.Join(downloadsDir, gowrapAsset.GetName())
-	if err := file.DownloadTo("gowrap", gowrapArchivePath, gowrapAsset.GetBrowserDownloadURL(), checksum, "sha256"); err != nil {
-		return err
-	}
-
-	archiveContentDir := filepath.Join(downloadsDir, "unarchived")
-	if err := os.Mkdir(archiveContentDir, 0700); err != nil {
-		return err
-	}
-
-	if err := archiver.Unarchive(gowrapArchivePath, archiveContentDir); err != nil {
+	archiveContentDir, err := unarchiveRemoteFile(downloadsDir, gowrapAsset, checksum)
+	if err != nil {
 		return err
 	}
 
@@ -135,6 +123,23 @@ func upgrade(release *github.RepositoryRelease) error {
 	}
 
 	return nil
+}
+
+func unarchiveRemoteFile(downloadsDir string, gowrapAsset *github.ReleaseAsset, checksum string) (string, error) {
+	gowrapArchivePath := filepath.Join(downloadsDir, gowrapAsset.GetName())
+	if err := file.DownloadTo("gowrap", gowrapArchivePath, gowrapAsset.GetBrowserDownloadURL(), checksum, "sha256"); err != nil {
+		return "", err
+	}
+
+	archiveContentDir := filepath.Join(downloadsDir, "unarchived")
+	if err := os.Mkdir(archiveContentDir, 0700); err != nil {
+		return "", err
+	}
+
+	if err := archiver.Unarchive(gowrapArchivePath, archiveContentDir); err != nil {
+		return "", err
+	}
+	return archiveContentDir, nil
 }
 
 func moveAll(files []os.FileInfo, srcDir, dstDir string, failFast bool) ([]os.FileInfo, error) {
@@ -195,7 +200,10 @@ func findAsset(release *github.RepositoryRelease) (*github.ReleaseAsset, string,
 var checksumLineRegex = regexp.MustCompile(`^([0-9a-f]+)\s+([^\s]+)\s*$`)
 
 func fetchChecksumFor(assetName string, checksumsAsset *github.ReleaseAsset) (string, error) {
-	response, err := http.Get(checksumsAsset.GetBrowserDownloadURL())
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	response, err := httputils.Get(ctx, checksumsAsset.GetBrowserDownloadURL())
 	if err != nil {
 		return "", err
 	}

@@ -1,6 +1,7 @@
 package file
 
 import (
+	"context"
 	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/hex"
@@ -15,6 +16,7 @@ import (
 	"github.com/k0kubun/go-ansi"
 	"github.com/schollz/progressbar/v3"
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
+	httputils "github.com/xabierlaiseca/gowrap/pkg/util/http"
 )
 
 func DownloadTo(packageName, dst, url, checksum, algorithm string) error {
@@ -31,7 +33,9 @@ func DownloadTo(packageName, dst, url, checksum, algorithm string) error {
 		return customerrors.Errorf("unsupported checksum algorithm: %s", algorithm)
 	}
 
-	response, err := http.Get(url)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	response, err := httputils.Get(ctx, url)
 	if err != nil {
 		return err
 	}

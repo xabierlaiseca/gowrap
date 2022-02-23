@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/xabierlaiseca/gowrap/cmd/gowrap/commands"
-
 	"github.com/xabierlaiseca/gowrap/cmd/common"
+	"github.com/xabierlaiseca/gowrap/cmd/gowrap/commands"
 )
 
 var version = "0.0.0"

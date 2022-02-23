@@ -5,9 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/xabierlaiseca/gowrap/pkg/semver"
-
 	"github.com/xabierlaiseca/gowrap/pkg/config"
+	"github.com/xabierlaiseca/gowrap/pkg/semver"
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
 	"github.com/xabierlaiseca/gowrap/pkg/versions"
 )

@@ -55,7 +55,7 @@ func FindLatestInstalledForPrefix(gowrapHome, prefix string) (string, error) {
 func PrintInstalled(gowrapHome string) error {
 	versions, err := ListInstalled(gowrapHome)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return printSortedVersions(versions)

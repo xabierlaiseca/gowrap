@@ -7,10 +7,9 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/xabierlaiseca/gowrap/pkg/util/file"
-
 	"github.com/mholt/archiver/v3"
 	"github.com/xabierlaiseca/gowrap/pkg/util/customerrors"
+	"github.com/xabierlaiseca/gowrap/pkg/util/file"
 	"github.com/xabierlaiseca/gowrap/pkg/versionsfile"
 )
 
@@ -51,12 +50,23 @@ func InstallIfNotInstalled(gowrapHome, version string) (bool, error) {
 		return false, customerrors.Errorf("version %s is not available", version)
 	}
 
+	destinationDir := filepath.Join(versionsDir, version)
+	if err := unarchiveRemoteFile(archive, destinationDir); err != nil {
+		return false, err
+	}
+
+	fmt.Printf("Successfully installed version %s\n", version)
+	return true, nil
+}
+
+func unarchiveRemoteFile(archive versionsfile.GoArchive, destinationDir string) error {
 	filename := path.Base(archive.URL)
 	downloadsDir, downloadsDirSet := os.LookupEnv("GOWRAP_DOWNLOADS_DIR")
 	if !downloadsDirSet {
+		var err error
 		downloadsDir, err = ioutil.TempDir(os.TempDir(), "go-download-")
 		if err != nil {
-			return false, err
+			return err
 		}
 
 		defer os.RemoveAll(downloadsDir)
@@ -65,21 +75,15 @@ func InstallIfNotInstalled(gowrapHome, version string) (bool, error) {
 	archiveDst := filepath.Join(downloadsDir, filename)
 	if !downloadsDirSet || !exists(archiveDst) {
 		if err := file.DownloadTo("go", archiveDst, archive.URL, archive.Checksum, archive.ChecksumAlgorithm); err != nil {
-			return false, err
+			return err
 		}
 	}
 
 	if err := archiver.Unarchive(archiveDst, downloadsDir); err != nil {
-		return false, err
+		return err
 	}
 
-	destinationDir := filepath.Join(versionsDir, version)
-	if err := os.Rename(filepath.Join(downloadsDir, "go"), destinationDir); err != nil {
-		return false, err
-	}
-
-	fmt.Printf("Successfully installed version %s\n", version)
-	return true, nil
+	return os.Rename(filepath.Join(downloadsDir, "go"), destinationDir)
 }
 
 func Uninstall(gowrapHome, version string) error {
