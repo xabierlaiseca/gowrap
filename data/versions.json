@@ -9431,6 +9431,20 @@
   ],
   "1.18.1": [
     {
+      "url": "https://golang.org/dl/go1.18.1.darwin-amd64.tar.gz",
+      "checksum": "3703e9a0db1000f18c0c7b524f3d378aac71219b4715a6a4c5683eb639f41a4d",
+      "checksumAlgorithm": "SHA256",
+      "os": "darwin",
+      "arch": "amd64"
+    },
+    {
+      "url": "https://golang.org/dl/go1.18.1.darwin-arm64.tar.gz",
+      "checksum": "6d5641a06edba8cd6d425fb0adad06bad80e2afe0fa91b4aa0e5aed1bc78f58e",
+      "checksumAlgorithm": "SHA256",
+      "os": "darwin",
+      "arch": "arm64"
+    },
+    {
       "url": "https://golang.org/dl/go1.18.1.linux-386.tar.gz",
       "checksum": "9a8df5dde9058f08ac01ecfaae42534610db398e487138788c01da26a0d41ff9",
       "checksumAlgorithm": "SHA256",
