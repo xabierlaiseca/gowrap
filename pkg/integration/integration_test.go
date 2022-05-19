@@ -171,6 +171,12 @@ func Test_CLIs(t *testing.T) {
 			wrapperCommand:   goVersionCommand,
 			assertSubCommand: assertExactVersion("1.14.2", goVersionCommand),
 		},
+		"InstallVersionWith0Patch": {
+			init: initGoProjectWithGoVersionFile("1.18", "1.18.0"),
+			gowrapExecutions: [][]string{},
+			wrapperCommand:   goVersionCommand,
+			assertSubCommand: assertExactVersion("1.18.0", goVersionCommand),
+		},
 	}
 
 	for testName, testCase := range testCases {
