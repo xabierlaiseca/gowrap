@@ -2,11 +2,13 @@ package versionsfile
 
 import (
 	"encoding/json"
+	"fmt"
 	"runtime"
 	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/xabierlaiseca/gowrap/pkg/cache"
+	"github.com/xabierlaiseca/gowrap/pkg/semver"
 )
 
 const localVersionsCachedFile = "goversions.json"
@@ -38,6 +40,9 @@ func Load() (map[string]GoArchive, error) {
 	}
 
 	for version, pga := range rvf.getArchivesFor(runtime.GOARCH, runtime.GOOS) {
+		if !semver.IsFullVersion(version) {
+			version = fmt.Sprintf("%s.0", version)
+		}
 		archivesForPlatform[version] = pga.GoArchive
 	}
 
