@@ -6,8 +6,8 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/alecthomas/kingpin v1.3.8-0.20200323085623-b6657d9477a6
 	github.com/google/go-github v17.0.0+incompatible
-	github.com/google/go-github/v43 v43.0.0
 	github.com/google/go-github/v44 v44.1.0
+	github.com/google/go-github/v48 v48.2.0
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/schollz/progressbar/v3 v3.8.6
@@ -24,7 +24,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
-	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/klauspost/compress v1.11.4 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
