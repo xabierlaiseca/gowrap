@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
-	github.com/alecthomas/kingpin v1.3.8-0.20200323085623-b6657d9477a6
+	github.com/alecthomas/kingpin/v2 v2.2.6+incompatible
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-github/v43 v43.0.0
 	github.com/google/go-github/v44 v44.1.0
