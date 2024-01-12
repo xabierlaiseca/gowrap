@@ -27,18 +27,22 @@ func Load() (map[string]GoArchive, error) {
 		logrus.Warningf("failed to get cached go versions file: %v", err)
 	}
 
-	archivesForPlatform := make(map[string]GoArchive)
-
 	if content != nil {
+		archivesForPlatform := make(map[string]GoArchive)
 		err = json.Unmarshal(content, &archivesForPlatform)
 		return archivesForPlatform, err
 	}
 
+	return DownloadToCache()
+}
+
+func DownloadToCache() (map[string]GoArchive, error) {
 	rvf, err := download()
 	if err != nil {
 		return nil, err
 	}
 
+	archivesForPlatform := make(map[string]GoArchive)
 	for version, pga := range rvf.getArchivesFor(runtime.GOARCH, runtime.GOOS) {
 		if !semver.IsFullVersion(version) {
 			version = fmt.Sprintf("%s.0", version)
