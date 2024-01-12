@@ -37,6 +37,10 @@ jobs:
         run: git diff-index --exit-code HEAD data/versions.json
         continue-on-error: true
 
+      - name: Install hub
+        run: sudo apt-get update && sudo apt-get install -y hub
+        if: "steps.check-versions-file.outcome == 'failure'"
+
       - name: Publish changes
         run: |
           set -eu
