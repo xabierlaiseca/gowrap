@@ -30,16 +30,12 @@ jobs:
       - name: Generate versions file
         run: |
           make generate-versions-file
-          git diff 
+          git diff
 
       - id: check-versions-file
         name: Check if changes in versions file
         run: git diff-index --exit-code HEAD data/versions.json
         continue-on-error: true
-
-      - name: Install hub
-        uses: geertvdc/setup-hub@master
-        if: "steps.check-versions-file.outcome == 'failure'"
 
       - name: Publish changes
         run: |
