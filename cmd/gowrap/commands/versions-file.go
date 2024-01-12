@@ -6,8 +6,9 @@ import (
 )
 
 func newVersionsFileCommand(parent *kingpin.Application) {
-	cmd := parent.Command("versions-file", "").Hidden()
+	cmd := parent.Command("versions-file", "commands to manage versions file")
 	newVersionsFileGenerateCommand(cmd)
+	newVersionsFileDownloadCommand(cmd)
 }
 
 func newVersionsFileGenerateCommand(parent *kingpin.CmdClause) {
@@ -19,5 +20,14 @@ func newVersionsFileGenerateCommand(parent *kingpin.CmdClause) {
 
 	cmd.Action(func(*kingpin.ParseContext) error {
 		return versionsfile.Generate(*file)
+	})
+}
+
+func newVersionsFileDownloadCommand(parent *kingpin.CmdClause) {
+	cmd := parent.Command("download", "Downloads latest versions file")
+
+	cmd.Action(func(*kingpin.ParseContext) error {
+		_, err := versionsfile.DownloadToCache()
+		return err
 	})
 }
