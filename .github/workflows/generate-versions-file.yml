@@ -14,7 +14,7 @@ jobs:
           go-version: 1.17
 
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: xabot/gowrap
           token: ${{ secrets.BOT_GITHUB_TOKEN }}
@@ -37,7 +37,7 @@ jobs:
         continue-on-error: true
 
       - name: Install hub
-        run: "curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.2"
+        uses: geertvdc/setup-hub@master
         if: "steps.check-versions-file.outcome == 'failure'"
 
       - name: Publish changes
