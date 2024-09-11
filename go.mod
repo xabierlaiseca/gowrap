@@ -1,13 +1,14 @@
 module github.com/xabierlaiseca/gowrap
 
-go 1.17
+go 1.21
+
+toolchain go1.23.1
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/alecthomas/kingpin v1.3.8-0.20200323085623-b6657d9477a6
 	github.com/google/go-github v17.0.0+incompatible
-	github.com/google/go-github/v58 v58.0.0
-	github.com/google/go-github/v58 v58.0.0
+	github.com/google/go-github/v64 v64.0.0
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/schollz/progressbar/v3 v3.8.6
