@@ -4,9 +4,9 @@ go 1.17
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
-	github.com/alecthomas/kingpin v1.3.8-0.20200323085623-b6657d9477a6
+	github.com/alecthomas/kingpin v2.2.6+incompatible
+	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/google/go-github v17.0.0+incompatible
-	github.com/google/go-github/v58 v58.0.0
 	github.com/google/go-github/v58 v58.0.0
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
 	github.com/mholt/archiver/v3 v3.5.1
@@ -18,7 +18,7 @@ require (
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
-	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
+	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/andybalholm/brotli v1.0.1 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
